@@ -63,6 +63,7 @@ function createWardrobe({video, play, reveal, blocked}) {
     root.style.setProperty('--chip-size',(panelW*116/area.w)+'px');
     root.style.setProperty('--chip-bottom',(panelW*(area.y+area.h-975)/area.w)+'px');
     paint(true);
+    startPainting();
   }
   function infoRect() {
     return group?.id === 'outfit' ? {x:25,y:802,w:790,h:222} : {x:32,y:654,w:727,h:345};
@@ -219,6 +220,7 @@ function createWardrobe({video, play, reveal, blocked}) {
       mounted=asset?.src || new URL(nextUrl,document.baseURI).href;
       expected=mounted;
       if(!asset && warmRequest?.url===nextUrl)stopWarm();
+      video.defaultPlaybackRate=video.playbackRate;
       video.preload='auto'; video.src=mounted;
       video.load();
       if(!blocked() && picker.hidden) play();
