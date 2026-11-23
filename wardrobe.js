@@ -5,7 +5,7 @@ function wardrobeMobileQuality() {
   return Math.min(innerWidth,innerHeight)<=600 && (navigator.maxTouchPoints>0 || innerWidth<=600);
 }
 
-function createWardrobe({video, play, reveal, blocked}) {
+function createWardrobe({video, play, reveal, blocked, switchLayer}) {
   const fps = 60000 / 1001;
   const catalog = window.wardrobeCatalog;
   const root = document.querySelector('#wardrobe');
@@ -26,20 +26,33 @@ function createWardrobe({video, play, reveal, blocked}) {
   const persist = () => { try { sessionStorage.setItem(profile, JSON.stringify(records)); } catch {} };
   let active = false, held = false, pending = false;
   let group, item, which = 0, jacket = false, aisle = false;
-  let generation = 0, paintTimer, warmTimer, posterTimer, loadTimer, messageTimer;
+  let generation = 0, paintTimer, warmTimer, loadTimer, messageTimer, frameTimer;
   let portrait = false, margin = false, lastAmbient = 0;
   let wanted='', expected='', mounted='', paletteKey='', layoutKey='';
-  let warmRequest=null, currentPoster=null;
-  const cache=new Map(), posters=new Map();
+  let warmRequest=null, visible=null, blend=null, frameWatch=null, stagingToken=null;
+  let links={}, linksTask, nativeSwitch=false;
+  const cache=new Map();
   const sourceWidth = 1920, sourceHeight = 1080;
   const sourceFocus = {outfit:.56, tops:.60, pants:.57, masks:.66, dresses:.56, jewelry:.53, boots:.51, heels:.51, slides:.51};
   ambient.width = 256; ambient.height = 144;
   video.parentElement.prepend(ambient);
+  video.classList.add('wr-film');
+  const back=video.cloneNode(false);
+  back.id='wr-other-film';back.muted=true;back.hidden=true;
+  video.after(back);
+  const layers=[video,back];
+
+  function focusFor(id) {
+    if(!portrait) return 50;
+    const fraction=(view.clientWidth/view.clientHeight)/(16/9);
+    return 100*Math.min(1,Math.max(0,((sourceFocus[id] ?? .57)-fraction/2)/(1-fraction)));
+  }
 
   function resize() {
     const w = view.clientWidth, h = view.clientHeight;
     if (!w || !h) return;
-    const key=[w,h,group?.id,active].join('/');
+    const id=visible?.dataset.category || group?.id;
+    const key=[w,h,id,active].join('/');
     if(key===layoutKey)return;
     layoutKey=key;
     const ratio = Math.min(w / 16, h / 9);
@@ -51,10 +64,8 @@ function createWardrobe({video, play, reveal, blocked}) {
     portrait = w / h <= 1.2;
     margin = !portrait && (values.left > 1 || values.top > 1);
     ambient.hidden = !active || !margin;
-    const visibleFraction = (w/h)/(16/9);
-    const target = sourceFocus[group?.id] ?? .57;
-    const focus = portrait ? 100*Math.min(1,Math.max(0,(target-visibleFraction/2)/(1-visibleFraction))) : 50;
-    view.style.setProperty('--wr-focus',focus+'%');
+    for(const layer of layers)layer.style.setProperty('--wr-layer-focus',focusFor(layer.dataset.category)+'%');
+    view.style.setProperty('--wr-focus',focusFor(id)+'%');
     const panelW = Math.min(w*.82, 485);
     const area = infoRect();
     root.style.setProperty('--info-w',panelW+'px');
@@ -66,7 +77,7 @@ function createWardrobe({video, play, reveal, blocked}) {
     startPainting();
   }
   function infoRect() {
-    return group?.id === 'outfit' ? {x:25,y:802,w:790,h:222} : {x:32,y:654,w:727,h:345};
+    return (visible?.dataset.category || group?.id) === 'outfit' ? {x:25,y:802,w:790,h:222} : {x:32,y:654,w:727,h:345};
   }
   function drawCrop(canvas, input, sx, sy, sw, sh) {
     const ctx=canvas.getContext('2d',{alpha:false});
@@ -74,10 +85,9 @@ function createWardrobe({video, play, reveal, blocked}) {
     const yr=(input.videoHeight || input.naturalHeight)/sourceHeight;
     if (ctx && xr && yr) ctx.drawImage(input,sx*xr,sy*yr,sw*xr,sh*yr,0,0,canvas.width,canvas.height);
   }
-  function paint(force, image) {
-    if(!active) return;
-    if(!image && (pending || video.readyState<2)) return;
-    const input=image || video;
+  function paint(force) {
+    if(!active || !visible || visible.readyState<2) return;
+    const input=visible;
     if (margin && (force || performance.now()-lastAmbient>250)) {
       drawCrop(ambient,input,0,0,sourceWidth,sourceHeight); lastAmbient=performance.now();
     }
@@ -94,21 +104,12 @@ function createWardrobe({video, play, reveal, blocked}) {
   function file(g,o,index=0,coat=false) {
     return g.id+'-'+String(o.index).padStart(2,'0')+'-'+(coat?'j':'')+index;
   }
-  function clipUrl(name) {
-    return 'media/'+(wardrobeMobileQuality()?'mobile/':'')+name+'.mp4';
+  function clipUrl(name,joined=false) {
+    return 'media/'+(joined?'continuity/':'')+(wardrobeMobileQuality()?'mobile/':'')+name+'.mp4';
   }
   function restrictPreload() {
     const net=navigator.connection;
     return net?.saveData || /(^|-)2g$|^3g$/.test(net?.effectiveType || '') || document.hidden;
-  }
-  function poster(name, priority='low') {
-    if(posters.has(name)) return posters.get(name);
-    const img=new Image();
-    img.decoding='async'; img.fetchPriority=priority;
-    img.src='media/posters/'+name+'.webp';
-    posters.set(name,img);
-    if(posters.size>12)posters.delete(posters.keys().next().value);
-    return img;
   }
   function stopWarm() {
     clearTimeout(warmTimer);
@@ -122,12 +123,12 @@ function createWardrobe({video, play, reveal, blocked}) {
     for(const c of cache.values()) bytes+=c.size;
     for(const [key,c] of cache) {
       if(bytes<=limit && cache.size<=6)break;
-      if(c.src===mounted)continue;
+      if(layers.some(layer=>layer.currentSrc===c.src))continue;
       URL.revokeObjectURL(c.src);cache.delete(key);bytes-=c.size;
     }
   }
-  function warm(name) {
-    const url=clipUrl(name);
+  function warm(name,joined=false) {
+    const url=clipUrl(name,joined);
     if(restrictPreload() || cache.has(url) || warmRequest || wanted===url)return;
     const controller=new AbortController();
     const job={url,controller};
@@ -140,79 +141,204 @@ function createWardrobe({video, play, reveal, blocked}) {
       if(!controller.signal.aborted)keep(url,blob);
     }).catch(()=>{}).finally(()=>{if(warmRequest===job)warmRequest=null;});
   }
+  function plan(g,o,index,coat,forecast=false) {
+    const windows=coat?o.jacketWindows:o.windows;
+    const previous=visible?.dataset.name;
+    const threshold=1.05/fps;
+    const atEnd=visible && (forecast || visible.ended || visible.duration-visible.currentTime<=threshold);
+    let choice=index ?? 0;
+    if(previous && atEnd){
+      for(let i=0;i<windows.length;i++) {
+        if(index!==null && index!==undefined && i!==index)continue;
+        const name=file(g,o,i,coat);
+        const edge=links[previous]?.[name];
+        if(edge)return {choice:i,name,edge};
+      }
+    }
+    if(index==null && !coat && visible?.dataset.category===g.id && previous) {
+      const stops=window.wardrobePoses?.byClip?.[previous]?.[String(o.index)];
+      if(stops) {
+        const local=Math.max(0,visible.currentTime-Number(visible.dataset.prefix || 0));
+        for(const [at,win] of stops) {
+          if(at>local)break;
+          if(windows[win])choice=win;
+        }
+      }
+    }
+    choice=Math.min(Math.max(choice,0),windows.length-1);
+    return {choice,name:file(g,o,choice,coat)};
+  }
   function warmChoices(){
     clearTimeout(warmTimer);
     if(!active || restrictPreload() || blocked() || !picker.hidden)return;
     warmTimer=setTimeout(()=>{
       if(!active || pending || blocked() || !picker.hidden || restrictPreload())return;
-      const options=filmed(group);
-      const pos=options.indexOf(item);
-      let next=aisle?file(group,item,1):file(group,options[(pos+1)%options.length]);
-      if(!aisle && options.length===1) next=file(catalog[1],filmed(catalog[1])[0]);
-      poster(next);
-      warm(next);
-      if(options.length>2)poster(file(group,options[(pos+options.length-1)%options.length]));
-    },110);
+      const options=filmed(group), pos=options.indexOf(item);
+      if(aisle)return warm(file(group,item,1));
+      if(options.length===1)return warm(file(catalog[1],filmed(catalog[1])[0]));
+      const p=plan(group,options[(pos+1)%options.length],null,false,held);
+      warm(p.name,Boolean(p.edge));
+    },100);
   }
   function prepare(){
+    if(!linksTask) {
+      linksTask=fetch('media/continuity/links.json').then(r=>r.ok?r.json():null)
+        .then(data=>{links=data?.links || {};}).catch(()=>{linksTask=null;});
+    }
     if(!restrictPreload())warm('entry');
-  }
-  function freezeFrom(input){
-    const width=Math.min(960,input.videoWidth || input.naturalWidth || 0);
-    if(!width)return;
-    const height=Math.round(width*9/16);
-    if(freeze.width!==width || freeze.height!==height){freeze.width=width;freeze.height=height;}
-    drawCrop(freeze,input,0,0,sourceWidth,sourceHeight);
-    freeze.hidden=false;
   }
   function stopPainting(){clearInterval(paintTimer);}
   function startPainting(){
     stopPainting();
-    if(!active || pending || held || video.paused || (!portrait && !margin))return;
+    if(!active || !visible || visible.paused || (!portrait && !margin))return;
     paintTimer=setInterval(()=>paint(false),portrait?130:300);
   }
-  function ready(){
-    if(!active || !pending || video.readyState<2 || video.currentSrc!==expected)return;
-    pending=false; currentPoster=null; clearTimeout(posterTimer);
-    root.dataset.motion='playing'; reveal(); freeze.hidden=true;
-    paint(true); warmChoices(); resume(); startPainting();
+  function clearFrameWatch(){
+    clearTimeout(frameTimer);
+    if(frameWatch)frameWatch.layer.cancelVideoFrameCallback(frameWatch.id);
+    frameWatch=null;
   }
-  function finish(){
-    if(!active || pending || held || video.currentSrc!==expected || !video.ended)return;
+  function hideLayer(layer){
+    layer.hidden=true;
+    layer.style.opacity='0';
+    if(layer!==freeze)layer.pause();
+  }
+  function cancelBlend(){
+    if(!blend)return;
+    const old=blend;blend=null;
+    old.animation.onfinish=null;old.animation.cancel();
+  }
+  // A third tap can arrive while both video layers are still visible. Preserve
+  // their exact on-screen mixture before recycling either decoder.
+  function interruptBlend(){
+    if(!blend)return;
+    const {outgoing,incoming}=blend;
+    const opacity=Number(getComputedStyle(outgoing).opacity);
+    const bounds=incoming.getBoundingClientRect();
+    const scratch=document.createElement('canvas');
+    const scale=Math.min(devicePixelRatio || 1,1280/Math.max(bounds.width,bounds.height,1));
+    scratch.width=Math.max(1,Math.round(bounds.width*scale));
+    scratch.height=Math.max(1,Math.round(bounds.height*scale));
+    const ctx=scratch.getContext('2d',{alpha:false});
+    function draw(layer){
+      if(layer===freeze){ctx.drawImage(freeze,0,0,scratch.width,scratch.height);return;}
+      if(!layer.videoWidth)return;
+      const zoom=Math.max(scratch.width/layer.videoWidth,scratch.height/layer.videoHeight);
+      const w=layer.videoWidth*zoom,h=layer.videoHeight*zoom;
+      const focus=Number.parseFloat(layer.style.getPropertyValue('--wr-layer-focus'))/100;
+      ctx.drawImage(layer,(scratch.width-w)*(Number.isFinite(focus)?focus:.5),(scratch.height-h)/2,w,h);
+    }
+    draw(incoming);ctx.globalAlpha=opacity;draw(outgoing);
+    cancelBlend();
+    freeze.width=scratch.width;freeze.height=scratch.height;
+    freeze.getContext('2d',{alpha:false}).drawImage(scratch,0,0);
+    freeze.hidden=false;freeze.style.opacity='1';
+    for(const layer of layers)hideLayer(layer);
+    visible=null;
+  }
+  function commit(token){
+    if(token!==generation || !active || !pending || video.currentSrc!==expected || video.readyState<2)return;
+    clearFrameWatch();
+    const outgoing=!freeze.hidden?freeze:visible;
+    const incoming=video;
+    pending=false;visible=incoming;root.dataset.visibleName=incoming.dataset.name;
+    root.dataset.motion='playing';reveal();
+    incoming.style.opacity='1';incoming.style.zIndex='1';
+    resize();paint(true);warmChoices();startPainting();
+    if(!outgoing || outgoing===incoming){
+      root.dataset.switch='settled';
+    }else{
+      const natural=nativeSwitch;
+      const duration=natural?55:Math.max(85,Math.min(195,incoming.duration*550));
+      if(outgoing!==freeze)outgoing.style.zIndex='2';
+      const animation=outgoing.animate([{opacity:1},{opacity:0}],{
+        duration,easing:natural?'linear':'cubic-bezier(.4,0,.3,1)',fill:'forwards'
+      });
+      blend={outgoing,incoming,animation};
+      root.dataset.switch=natural?'native':'blend';
+      animation.onfinish=()=>{
+        if(blend?.animation!==animation)return;
+        // Keep the decoder layer mounted. Toggling display while the new film is
+        // promoted can expose the page background for one compositor frame.
+        outgoing.style.opacity='0';
+        if(outgoing===freeze)freeze.hidden=true;else outgoing.pause();
+        cancelBlend();root.dataset.switch=natural?'native':'settled';
+      };
+    }
+    if(incoming.ended)finish(incoming);
+  }
+  function afterPresentation(token) {
+    if(token!==generation || stagingToken===token || !pending || video.readyState<2 ||
+       video.currentSrc!==expected)return;
+    stagingToken=token;
+    // The decoder submits ahead of browser composition. Leave the new film
+    // opaque underneath the outgoing one through two actual paint cycles.
+    requestAnimationFrame(()=>requestAnimationFrame(()=>commit(token)));
+  }
+  function watchPresentation(layer) {
+    if(!active || !pending || layer!==video || !expected || frameWatch)return;
+    const token=generation;
+    if(layer.requestVideoFrameCallback) {
+      const id=layer.requestVideoFrameCallback(()=>{
+        if(frameWatch?.id===id && frameWatch.layer===layer)frameWatch=null;
+        afterPresentation(token);
+      });
+      frameWatch={layer,id};
+    }
+  }
+  function ready(layer){
+    if(!active || !pending || video!==layer || layer.readyState<2 || layer.currentSrc!==expected)return;
+    watchPresentation(layer);
+    // Some inline players stop reporting presentation callbacks while a menu
+    // or system overlay is open. Only release after playback and a paint.
+    clearTimeout(frameTimer);
+    const token=generation;
+    frameTimer=setTimeout(()=>{
+      if(token!==generation || blocked() || (!layer.currentTime && !layer.ended))return;
+      afterPresentation(token);
+    },layer.requestVideoFrameCallback?260:0);
+  }
+  function fallbackFrame(layer) {
+    if(!pending || layer!==video || blocked() || layer.readyState<2 ||
+       layer.currentSrc!==expected || (!layer.ended && layer.currentTime<=0))return;
+    const token=generation;
+    afterPresentation(token);
+  }
+  function finish(layer){
+    if(!active || pending || held || layer!==visible || layer!==video || !layer.ended)return;
     stopPainting();paint(true);
     if(aisle && root.dataset.entryAuto==='yes'){
       select(catalog[0],filmed(catalog[0])[0],1);
     }else{
-      held=true;root.dataset.motion='held';
+      held=true;root.dataset.motion='held';warmChoices();
     }
   }
-  function clip(range,name){
+  function clip(range,name,edge){
     const token=++generation;
-    const nextUrl=clipUrl(name);
-    clearTimeout(posterTimer);clearTimeout(loadTimer); clearTimeout(warmTimer);stopPainting();
-    if(!pending && !video.hidden && video.readyState>=2 && video.style.opacity==='1' && freeze.hidden) freezeFrom(video);
-    video.pause();
-    held=false;pending=true;wanted=nextUrl;expected='';
-    root.dataset.from=range[0];root.dataset.to=range[1];root.dataset.motion='loading';
-    root.dataset.origin=Math.ceil(range[0]*fps-1e-8)/fps;
-    root.dataset.asset=video.dataset.asset=nextUrl;
-    video.dataset.origin=root.dataset.origin;
-    function showPoster(){
-      if(token!==generation || !pending || !active)return;
-      const img=poster(name,'high');
-      currentPoster=img;
-      const show=()=>{
-        if(token!==generation || !active || !pending || !img.naturalWidth)return;
-        freezeFrom(img); paint(true,img);
-      };
-      if(img.complete)show();
-      else img.addEventListener('load',show,{once:true});
+    const nextUrl=clipUrl(name,Boolean(edge));
+    clearTimeout(loadTimer);clearTimeout(warmTimer);clearFrameWatch();
+    interruptBlend();
+    const incoming=visible===layers[0]?layers[1]:visible===layers[1]?layers[0]:video;
+    const rate=video.playbackRate;
+    for(const layer of layers)layer.id=layer===incoming?'game-footage':'wr-other-film';
+    video=incoming;switchLayer(incoming);
+    incoming.pause();incoming.hidden=false;
+    incoming.style.zIndex='1';incoming.style.opacity=(visible || !freeze.hidden)?'1':'0';
+    incoming.style.setProperty('--wr-layer-focus',focusFor(group.id)+'%');
+    if(visible){
+      visible.style.zIndex='2';visible.style.opacity='1';
+      if(visible.paused && !visible.ended && !blocked() && picker.hidden)visible.play().catch(()=>{});
     }
-    if(posters.get(name)?.complete)showPoster();
-    else posterTimer=setTimeout(showPoster,125);
-
-    // Only the most recent intent may attach an asset. Streaming a cold clip lets
-    // the browser present its opening keyframe while subsequent frames arrive.
+    nativeSwitch=Boolean(edge) || (visible?.dataset.name==='entry' && name==='outfit-00-1' && visible.ended);
+    held=false;pending=true;wanted=nextUrl;expected='';
+    root.dataset.switch='waiting';root.dataset.motion='loading';
+    root.dataset.from=range[0];root.dataset.to=range[1];
+    root.dataset.origin=(edge?.startFrame ?? Math.ceil(range[0]*fps-1e-8))/fps;
+    root.dataset.asset=incoming.dataset.asset=nextUrl;
+    root.dataset.name=incoming.dataset.name=name;
+    incoming.dataset.origin=root.dataset.origin;
+    incoming.dataset.category=group.id;
+    incoming.dataset.prefix=(edge?.gapFrames || 0)/fps;
     function mount(){
       if(token!==generation || !active || expected)return;
       clearTimeout(loadTimer);
@@ -220,10 +346,9 @@ function createWardrobe({video, play, reveal, blocked}) {
       mounted=asset?.src || new URL(nextUrl,document.baseURI).href;
       expected=mounted;
       if(!asset && warmRequest?.url===nextUrl)stopWarm();
-      video.defaultPlaybackRate=video.playbackRate;
-      video.preload='auto'; video.src=mounted;
-      video.load();
-      if(!blocked() && picker.hidden) play();
+      incoming.defaultPlaybackRate=rate;incoming.preload='auto';incoming.src=mounted;
+      incoming.load();watchPresentation(incoming);
+      if(!blocked() && picker.hidden)play();
     }
     if(warmRequest?.url===nextUrl && !cache.has(nextUrl)) {
       warmRequest.result.then(mount);
@@ -274,20 +399,21 @@ function createWardrobe({video, play, reveal, blocked}) {
   }
   function openMenu() {
     if(!picker.hidden){closeMenu();return;}
-    video.pause(); picker.hidden=false; button('categories').setAttribute('aria-expanded','true');
+    pause(); picker.hidden=false; button('categories').setAttribute('aria-expanded','true');
   }
-  function select(nextGroup,nextItem,windowIndex=0,withJacket=false) {
+  function select(nextGroup,nextItem,windowIndex=null,withJacket=false) {
     if(!nextGroup || !nextItem?.windows.length) return;
+    const nextPlan=plan(nextGroup,nextItem,windowIndex,withJacket);
     group=nextGroup; item=nextItem; aisle=false;
     jacket=Boolean(withJacket && item.jacketWindows?.length);
     const windows=jacket ? item.jacketWindows : item.windows;
-    which=Math.max(0,Math.min(windows.length-1,windowIndex));
+    which=nextPlan.choice;
     const saved=records[group.id];
     const wearing=saved?.worn===item.index && Boolean(saved?.jacket)===jacket;
     root.dataset.mode=wearing?'equipped':'browse';
     root.dataset.category=group.id; root.dataset.option=item.index; root.dataset.jacket=String(jacket);
     root.setAttribute('aria-label','Vestuario de Lucía — '+item.name);
-    closeMenu(false); showPalette(); resize(); clip(windows[which],file(group,item,which,jacket));
+    closeMenu(false); showPalette(); resize(); clip(windows[which],nextPlan.name,nextPlan.edge);
   }
   function openGroup(id) {
     const g=findGroup(id);
@@ -320,14 +446,24 @@ function createWardrobe({video, play, reveal, blocked}) {
   }
   function resume() {
     if(!active || blocked() || !picker.hidden) return;
+    if(visible && visible!==video && !visible.ended && visible.paused)visible.play().catch(()=>{});
+    if(pending && video.ended){fallbackFrame(video);return;}
     if(!held && expected) play();
     else if(held) paint(true);
   }
+  function pause() {
+    for(const layer of layers)layer.pause();
+    stopPainting();
+  }
   function reset() {
     active=false; held=false; pending=false; generation++;
-    stopPainting();stopWarm();clearTimeout(posterTimer);clearTimeout(loadTimer);
-    currentPoster=null;expected='';wanted='';mounted='';layoutKey='';
-    if(video.hasAttribute('src')) {video.pause();video.removeAttribute('src');video.load();}
+    stopPainting();stopWarm();clearTimeout(loadTimer);clearFrameWatch();cancelBlend();
+    visible=null;expected='';wanted='';mounted='';layoutKey='';
+    delete root.dataset.visibleName;
+    for(const layer of layers){
+      hideLayer(layer);
+      if(layer.hasAttribute('src')) {layer.removeAttribute('src');layer.load();}
+    }
     for(const c of cache.values())URL.revokeObjectURL(c.src);
     cache.clear();
     clearTimeout(messageTimer); status.textContent='';
@@ -335,6 +471,7 @@ function createWardrobe({video, play, reveal, blocked}) {
   }
   function begin() {
     if(active)reset();
+    prepare();
     active=true; root.hidden=false; beginAisle();
   }
   function snapshot() {
@@ -342,12 +479,14 @@ function createWardrobe({video, play, reveal, blocked}) {
     const scale=Math.min(1,1280/Math.max(view.clientWidth,view.clientHeight));
     c.width=Math.round(view.clientWidth*scale); c.height=Math.round(view.clientHeight*scale);
     const ctx=c.getContext('2d');
-    if(!ctx || video.readyState<2) return null;
+    const frame=visible || (!freeze.hidden?freeze:null);
+    if(!ctx || !frame)return null;
+    if(frame===freeze){ctx.drawImage(frame,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.84);}
     const r=Math[portrait?'max':'min'](c.width/sourceWidth,c.height/sourceHeight);
     const w=sourceWidth*r, h=sourceHeight*r;
     ctx.fillStyle='#101115'; ctx.fillRect(0,0,c.width,c.height);
     const f=(parseFloat(view.style.getPropertyValue('--wr-focus'))||50)/100;
-    ctx.drawImage(video,(c.width-w)*(portrait?f:.5),(c.height-h)*.5,w,h);
+    ctx.drawImage(frame,(c.width-w)*(portrait?f:.5),(c.height-h)*.5,w,h);
     return c.toDataURL('image/jpeg',.84);
   }
   function act(name) {
@@ -399,15 +538,13 @@ function createWardrobe({video, play, reveal, blocked}) {
   document.addEventListener('pointerdown',e=>{
     if(active && !picker.hidden && !picker.contains(e.target) && !button('categories').contains(e.target)) closeMenu();
   },true);
-  for(const evt of ['loadeddata','canplay','playing'])video.addEventListener(evt,ready);
-  video.addEventListener('playing',startPainting);
-  video.addEventListener('pause',stopPainting);
-  video.addEventListener('ended',finish);
-  picker.addEventListener('pointerover',e=>{
-    if(e.pointerType!=='mouse' || restrictPreload())return;
-    const g=findGroup(e.target.closest('button')?.dataset.category);
-    if(g)poster(file(g,filmed(g)[0]));
-  });
+  for(const layer of layers){
+    for(const evt of ['loadeddata','canplay','playing'])layer.addEventListener(evt,()=>ready(layer));
+    layer.addEventListener('playing',()=>{if(layer===visible)startPainting();});
+    layer.addEventListener('pause',()=>{if(layer===visible)stopPainting();});
+    layer.addEventListener('timeupdate',()=>{if(!layer.requestVideoFrameCallback)fallbackFrame(layer);});
+    layer.addEventListener('ended',()=>{if(pending)fallbackFrame(layer);else finish(layer);});
+  }
   function retry(){
     if(!active)return;
     if(!video.error){resume();return;}
@@ -417,7 +554,7 @@ function createWardrobe({video, play, reveal, blocked}) {
   }
   if(window.ResizeObserver) new ResizeObserver(resize).observe(view);
   window.addEventListener('resize',resize,{passive:true});
-  return {start:begin,reset,resume,prepare,retry,snapshot,
+  return {start:begin,reset,resume,pause,prepare,retry,snapshot,layers,
     failed:()=>active && Boolean(expected) && video.currentSrc===expected,
     action:()=>act(aisle?'enter':'confirm'),aisle:()=>aisle,
     wantsPlay:()=>active && !held && Boolean(expected) && picker.hidden};

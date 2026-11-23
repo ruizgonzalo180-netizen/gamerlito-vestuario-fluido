@@ -389,9 +389,10 @@
 
     #game-hud .gh-hidden-title{filter:blur(6px);user-select:none}
   </style>
-<link rel="stylesheet" href="wardrobe.css">
+<link rel="stylesheet" href="wardrobe.css?v=cb634343dc95">
 <script src="wardrobe-catalog.js"></script>
-<script src="wardrobe.js"></script>
+<script src="wardrobe-poses.js?v=70a0381bb676"></script>
+<script src="wardrobe.js?v=800bc375c4db"></script>
 </head>
 <body>
   <main id="launcher" aria-label="Roblox experience launcher">
@@ -645,7 +646,7 @@
   const title = document.querySelector('#game-cover');
   const intro = document.querySelector('#game-intro');
   const ident = document.querySelector('#game-ident');
-  const footage = document.querySelector('#game-footage');
+  let footage = document.querySelector('#game-footage');
   const videos = [intro,ident,footage];
   const feedback = document.querySelector('#playback-message');
   const note = document.querySelector('#playback-note');
@@ -659,6 +660,7 @@
   let shownAction;
   const shop=createWardrobe({
     video:footage, play:()=>startVideo(footage),
+    switchLayer:next=>{ footage=next; videos[2]=next; syncAudio(); },
     reveal:()=>showDecodedFrame(footage),
     blocked:()=>phase!=='playing'||pauses.size>0
   });
@@ -767,6 +769,7 @@
     if(phase==='home' || pauses.has(reason)) return;
     pauses.add(reason); freezeEntryClock();
     activeVideo()?.pause();
+    if(phase==='playing')shop.pause();
     sprint(false);
     syncAudio();
     vectorX=vectorY=0;
@@ -874,6 +877,7 @@
   }
   function snapshot() {
     if(phase==='home'||phase==='joining') return null;
+    if(phase==='playing')return shop.snapshot();
     const video=activeVideo();
     const img=video && video.readyState>=2 ? video : title;
     const sw=img.videoWidth||img.naturalWidth,sh=img.videoHeight||img.naturalHeight;
@@ -911,8 +915,8 @@
     soundNeedsTap=false;syncAudio();startVideo(video);
   });
 
-  for(const video of videos){
-    video.addEventListener('playing',()=>showDecodedFrame(video));
+  for(const video of [intro,ident,...shop.layers]){
+    if(!shop.layers.includes(video))video.addEventListener('playing',()=>showDecodedFrame(video));
     video.addEventListener('error',()=>{
       if(video===activeVideo() && (video!==footage || shop.failed()))showFeedback('The clip could not load.','Retry');
     });

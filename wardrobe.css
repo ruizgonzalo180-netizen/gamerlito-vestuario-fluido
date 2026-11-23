@@ -9,9 +9,10 @@
 #wr-ambient { position: absolute; width:100%; height:100%; inset:0; object-fit:cover; filter:blur(18px) brightness(.64); }
 #game-surface #wr-ambient { z-index: -1; }
 #game-view[data-phase=playing] #game-surface { background: transparent; }
-#game-view[data-phase=playing] #game-footage {
+#game-view[data-phase=playing] .wr-film {
   inset: var(--wr-top,0px) auto auto var(--wr-left,0px);
   width: var(--wr-w,100%); height: var(--wr-h,100%); object-fit:fill!important;
+  background:transparent; will-change:opacity,transform;
 }
 #wr-freeze { position:absolute; inset:var(--top) auto auto var(--left); width:var(--w); height:var(--h); }
 .wr-tools { position:absolute; z-index:3; top:max(1.65%,env(safe-area-inset-top)); right:max(17%,env(safe-area-inset-right)); display:flex; gap:5px; pointer-events:auto; }
@@ -68,7 +69,8 @@
   #wardrobe .wr-bottom button { width:auto; min-height:30px; padding:0 9px; color:white; font-size:12px; }
 }
 @media (max-aspect-ratio:6/5) {
-  #game-view[data-phase=playing] #game-footage, #wr-freeze { inset:0; width:100%; height:100%; object-fit:cover!important; object-position:var(--wr-focus,60%) center; }
+  #game-view[data-phase=playing] .wr-film { inset:0; width:100%; height:100%; object-fit:cover!important; object-position:var(--wr-layer-focus,60%) center; }
+  #wr-freeze { inset:0; width:100%; height:100%; object-fit:fill; }
   #game-view[data-phase=playing] #game-hud .gh-toolbar { left:max(8px,env(safe-area-inset-left)); }
   .wr-tools, .wr-picker { right:max(8px,env(safe-area-inset-right)); }
   .wr-picker { width:min(330px,92%); }
