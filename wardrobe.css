@@ -1,0 +1,87 @@
+#wardrobe {
+  position: absolute; inset: 0; z-index: 6; overflow: hidden;
+  pointer-events: none; color: white; font: 600 14px/1.1 "Segoe UI", Arial, sans-serif;
+  --left: 0px; --top: 0px; --w: 100vw; --h: 100vh; --focus: 60%;
+}
+#wardrobe button { cursor: pointer; color: inherit; font: inherit; border: 0; touch-action: manipulation; }
+#wardrobe button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+#wardrobe button:disabled { cursor: default; }
+#wr-ambient { position: absolute; width:100%; height:100%; inset:0; object-fit:cover; filter:blur(18px) brightness(.64); }
+#game-surface #wr-ambient { z-index: -1; }
+#game-view[data-phase=playing] #game-surface { background: transparent; }
+#game-view[data-phase=playing] #game-footage {
+  inset: var(--wr-top,0px) auto auto var(--wr-left,0px);
+  width: var(--wr-w,100%); height: var(--wr-h,100%); object-fit:fill!important;
+}
+#wr-freeze { position:absolute; inset:var(--top) auto auto var(--left); width:var(--w); height:var(--h); }
+.wr-tools { position:absolute; z-index:3; top:max(1.65%,env(safe-area-inset-top)); right:max(17%,env(safe-area-inset-right)); display:flex; gap:5px; pointer-events:auto; }
+#wardrobe .wr-pill, #wardrobe .wr-variants>button {
+  display:inline-flex; align-items:center; justify-content:center; gap:7px; height:clamp(36px,5.85vmin,49px);
+  padding:0 13px; background:rgba(12,13,15,.86); border-radius:100px; color:white;
+}
+#wardrobe .wr-replay { width:clamp(36px,5.85vmin,49px); padding:0; font:25px/1 Arial,sans-serif; }
+#wardrobe .wr-pill:hover, #wardrobe .wr-pill[aria-expanded=true], #wardrobe .wr-variants>button:hover { background:rgba(50,51,55,.94); }
+#game-view[data-phase=playing] #game-hud .gh-toolbar { left:max(calc(var(--wr-left,0px) + var(--wr-w,100vw)*.20),env(safe-area-inset-left)); }
+#game-view:has(#wardrobe:not([hidden])) #game-hud :is(.gh-stick,.gh-jump,.gh-sprint,.gh-scene-action,.gh-native-prompts,.gh-prompt-tray) { display:none; }
+#game-view:has(.gh-modal-open) #wardrobe { visibility:hidden; }
+.wr-picker {
+  position:absolute; z-index:4; right:max(17%,env(safe-area-inset-right)); top:calc(max(1.65%,env(safe-area-inset-top)) + clamp(36px,5.85vmin,49px) + 6px);
+  width:min(330px,88%); display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:3px;
+  max-height:70%; overflow:auto; overscroll-behavior:contain; scrollbar-width:thin;
+  padding:6px; background:rgba(14,16,20,.97); border:1px solid #ffffff26; border-radius:12px;
+  box-shadow:0 8px 28px #0005; pointer-events:auto; touch-action:pan-y;
+}
+#wardrobe .wr-picker button { min-height:38px; padding:9px; text-align:left; border-radius:6px; background:transparent; text-transform:capitalize; }
+#wardrobe .wr-picker button:is(:hover,:focus-visible), #wardrobe .wr-picker button[aria-current=true] { background:#393b42; }
+.wr-enter { position:absolute; left:calc(var(--left) + var(--w)*.515); top:calc(var(--top) + var(--h)*.411); width:calc(var(--w)*.14); height:calc(var(--h)*.16); pointer-events:auto; background:transparent; }
+.wr-mobile-item { display:none; }
+#wr-options { position:absolute; z-index:1; inset:calc(var(--top) + var(--h)*.797) auto auto calc(var(--left) + var(--w)*.0163);
+  height:calc(var(--h)*.108); display:flex; align-items:stretch; pointer-events:none; }
+#wr-options button { position:relative; display:block; background:transparent; pointer-events:auto; width:calc(var(--w)*.06255); padding:0; }
+#wr-options button:hover:not(:disabled), #wr-options button:focus-visible { box-shadow:inset 0 0 0 2px #fff; }
+#wr-options button:disabled { background:repeating-linear-gradient(135deg,transparent,transparent 5px,#14141666 5px,#14141666 7px); }
+.wr-variants { position:absolute; display:flex; gap:3px; align-items:center; left:calc(var(--left) + var(--w)*var(--wr-variant-x,.4)); top:calc(var(--top) + var(--h)*.843); transform:translateY(-50%); pointer-events:auto; }
+#wardrobe .wr-variants button { font-size:22px; line-height:1; min-width:32px; padding:0 6px; height:clamp(30px,4.2vh,40px); }
+.wr-bottom { position:absolute; bottom:calc(100% - var(--top) - var(--h)*.997); right:calc(100% - var(--left) - var(--w)*.997); height:max(28px,calc(var(--h)*.075)); display:flex; align-items:stretch; pointer-events:auto; }
+#wardrobe .wr-bottom button { color:transparent; background:transparent; border-radius:3px; }
+#wardrobe .wr-bottom button:hover { background:#ffffff20; }
+#wardrobe [data-wardrobe=jacket] { width:calc(var(--w)*.113); }
+#wardrobe [data-wardrobe=save] { width:calc(var(--w)*.048); }
+#wardrobe [data-wardrobe=confirm] { width:calc(var(--w)*.096); }
+#wardrobe [data-wardrobe=back] { width:calc(var(--w)*.056); }
+.wr-status { position:absolute; bottom:calc(max(2.4%,env(safe-area-inset-bottom)) + 30px); left:50%; transform:translateX(-50%); background:#131419e8; padding:8px 13px; border-radius:7px; text-align:center; pointer-events:none; width:max-content; max-width:80%; }
+.wr-status:empty { display:none; }
+#wardrobe [data-wardrobe=save][aria-pressed=true] { position:relative; }
+@media (min-aspect-ratio:6/5) and (min-width:1001px) {
+  #wardrobe [data-wardrobe=save][aria-pressed=true]::before {
+    content:'✓'; position:absolute; right:0; top:-4px; border-radius:100%;
+    display:grid; place-items:center; width:17px; height:17px; color:#202321; background:#f2f8ed; font:700 12px/1 Arial;
+  }
+}
+#wardrobe[data-mode=entry] :is(#wr-options,.wr-variants,.wr-bottom,.wr-mobile-item,.wr-replay), #wardrobe:not([data-mode=entry]) .wr-enter {display:none;}
+@media (min-aspect-ratio:6/5) and (max-width:1000px) {
+  .wr-bottom {
+    bottom:calc(100% - var(--top) - var(--h)); right:calc(100% - var(--left) - var(--w));
+    min-width:calc(var(--w)*.35); height:max(30px,calc(var(--h)*.067));
+    align-items:center; justify-content:flex-end; border-radius:8px 0 0 0; background:#17191d;
+  }
+  #wardrobe .wr-bottom button { width:auto; min-height:30px; padding:0 9px; color:white; font-size:12px; }
+}
+@media (max-aspect-ratio:6/5) {
+  #game-view[data-phase=playing] #game-footage, #wr-freeze { inset:0; width:100%; height:100%; object-fit:cover!important; object-position:var(--wr-focus,60%) center; }
+  #game-view[data-phase=playing] #game-hud .gh-toolbar { left:max(8px,env(safe-area-inset-left)); }
+  .wr-tools, .wr-picker { right:max(8px,env(safe-area-inset-right)); }
+  .wr-picker { width:min(330px,92%); }
+  .wr-enter { left:20%; top:40%; width:64%; height:24%; }
+  .wr-mobile-item { position:absolute; left:0; right:0; bottom:0; height:calc(var(--panel,124px) + max(45px,env(safe-area-inset-bottom))); background:linear-gradient(transparent,#101013 24%); display:block; }
+  #wr-info { position:absolute; left:max(8px,env(safe-area-inset-left)); bottom:max(43px,env(safe-area-inset-bottom)); width:var(--info-w,88%); height:var(--panel,124px); }
+  #wr-info { mask-image:linear-gradient(to bottom,transparent,#000 5%,#000 99%,transparent); }
+  #wr-options { top:auto; bottom:calc(max(43px,env(safe-area-inset-bottom)) + var(--chip-bottom,9px)); left:max(8px,env(safe-area-inset-left)); height:var(--chip-size,39px); }
+  #wr-options button { width:var(--chip-step,41px); }
+  .wr-variants { left:auto; right:8px; top:auto; bottom:calc(max(43px,env(safe-area-inset-bottom)) + var(--chip-bottom,9px)); transform:none; flex-direction:column; }
+  #wardrobe .wr-variants>button { min-width:36px; height:32px; }
+  .wr-bottom { left:0; right:0; bottom:0; height:max(43px,calc(env(safe-area-inset-bottom) + 35px)); padding:0 7px env(safe-area-inset-bottom); background:#101013; justify-content:flex-end; align-items:center; gap:4px; }
+  #wardrobe .wr-bottom button { width:auto; min-height:34px; padding:0 10px; color:#f3f3f5; border:1px solid #5a5b60; border-radius:18px; font-size:13px; }
+  #wardrobe .wr-bottom [data-wardrobe=confirm] { color:#18191c; background:#eeeef2; }
+  .wr-status { bottom:calc(var(--panel,124px) + max(50px,env(safe-area-inset-bottom))); }
+}

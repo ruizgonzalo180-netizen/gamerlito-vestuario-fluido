@@ -1,0 +1,1627 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#141519">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gamerlito · Vestuario de Lucía">
+  <script>
+    if (location.protocol === 'https:' || location.protocol === 'http:') {
+      for (const [rel, href] of [['manifest', './app.webmanifest'], ['apple-touch-icon', './gamerlito-192.png']]) {
+        const link = document.createElement('link');
+        link.rel = rel;
+        link.href = href;
+        document.head.append(link);
+      }
+    }
+  </script>
+  <title>Roblox · Gamerlito · Vestuario de Lucía</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;overscroll-behavior:none;background:#101115}
+    html{color-scheme:dark}
+    body{font-family:Arial,sans-serif;color:#191a1c}
+    button,input,select,textarea{font:inherit}
+    [hidden]{display:none!important}
+    #game-view{position:fixed;inset:0;overflow:hidden;isolation:isolate;background:#140a1b;color:#fff;touch-action:none}
+    #game-surface{position:absolute;inset:0;overflow:hidden;background:#180a1c;pointer-events:none}
+    #game-surface>*{position:absolute;inset:0;width:100%;height:100%;display:block}
+    #game-cover{object-fit:cover}
+    #game-intro{object-fit:cover;opacity:0}
+    #game-ident{background:#20202b;object-fit:cover;opacity:0}
+    #game-footage{background:#101115;object-fit:cover;opacity:0;will-change:transform}
+    #enable-game-audio{position:absolute;z-index:9;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));padding:9px 15px;border:1px solid #ffffff50;border-radius:22px;background:#17191fe6;color:#fff;font-size:14px;cursor:pointer}
+    #playback-message{position:absolute;z-index:15;bottom:max(7%,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);max-width:88%;padding:10px 14px;border-radius:12px;background:#17191fec;display:flex;align-items:center;gap:12px;color:#fff;font-size:14px}
+    #playback-message button{margin:0;padding:8px 14px;border-radius:8px;background:#fff;color:#111;border:0;cursor:pointer;font-weight:700}
+    @media(prefers-reduced-motion:reduce){#game-surface>*{will-change:auto}}
+    @font-face{font-family:LxBuilder;src:url('launcher/9918c821cd6f70e1.otf') format('opentype');font-weight:400;font-display:swap}
+@font-face{font-family:LxBuilder;src:url('launcher/5d552392434c900b.otf') format('opentype');font-weight:600;font-display:swap}
+@font-face{font-family:LxBuilder;src:url('launcher/0946b6e9ff55f04b.otf') format('opentype');font-weight:700 900;font-display:swap}
+#launcher{--ink:#191a20;--muted:#51555d;--soft:#f1f2f4;--line:#dcdee3;--blue:#3755f7;--rail:clamp(60px,6.1vw,90px);--gutter:clamp(18px,2.15vw,40px);position:fixed;inset:0;z-index:1;background:#fff;color:var(--ink);display:flex;font:400 16px/1.32 LxBuilder,Arial,sans-serif;overflow:hidden;color-scheme:light;text-align:left}
+#launcher[hidden],#launcher .lx-hide{display:none!important}
+#launcher{--lx-safe-top:env(safe-area-inset-top,0px);--lx-safe-right:env(safe-area-inset-right,0px);--lx-safe-bottom:env(safe-area-inset-bottom,0px);--lx-safe-left:env(safe-area-inset-left,0px);box-sizing:border-box;padding:var(--lx-safe-top) var(--lx-safe-right) 0 var(--lx-safe-left)}
+#launcher *,#launcher *:before,#launcher *:after{box-sizing:border-box}
+#launcher h1,#launcher h2,#launcher h3,#launcher p{margin:0}
+#launcher button,#launcher input{font:inherit;color:inherit}
+#launcher button{border:0;background:none;text-align:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#launcher button:focus-visible,#launcher input:focus-visible,#launcher textarea:focus-visible{outline:3px solid #365af6;outline-offset:3px}
+#launcher img{display:block;max-width:100%;user-select:none;-webkit-user-drag:none}
+#launcher .lx-hidden-name{display:inline-block;filter:blur(max(6px,.36em));user-select:none;pointer-events:none}
+#launcher input.lx-hidden-input{color:transparent;text-shadow:0 0 .43em var(--ink);caret-color:var(--ink)}
+#launcher input.lx-hidden-input::selection{color:transparent;background:#b1c0fe}
+#launcher i{display:inline-flex;align-items:center;justify-content:center;font-style:normal;flex:none}
+#launcher i svg{width:100%;height:100%;display:block}
+#launcher .lx-rail{width:var(--rail);flex:none;padding:clamp(16px,3vh,40px) 6px max(6px,var(--lx-safe-bottom));display:flex;align-items:center;flex-direction:column;gap:clamp(4px,1.05vh,13px);z-index:2;background:white}
+#launcher .lx-nav-toggle{display:none}
+#launcher .lx-rail button{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;width:100%;height:clamp(52px,7.5vh,72px);font-size:clamp(11px,.91vw,14px);border-radius:11px;color:var(--muted)}
+#launcher .lx-rail button:hover,#launcher .lx-header-tools button:hover,#launcher .lx-dialog-head button:hover{background:var(--soft)}
+#launcher .lx-rail button[aria-current=page]{color:var(--ink);font-weight:700}
+#launcher .lx-rail i,#launcher .lx-rail img{width:clamp(23px,2vw,32px);height:clamp(23px,2vw,32px)}
+#launcher .lx-rail img{border-radius:50%}
+#launcher .lx-shell{display:flex;flex:1;min-width:0;flex-direction:column}
+#launcher .lx-header{position:relative;z-index:1;min-height:clamp(64px,8.1vh,90px);padding:0 var(--gutter);display:grid;align-items:center;grid-template-columns:minmax(70px,1fr) minmax(170px,41%) minmax(70px,1fr);gap:12px}
+#launcher .lx-brand{width:clamp(100px,9.3vw,155px);padding:0}
+#launcher .lx-brand img{width:100%;height:auto}
+#launcher .lx-search{height:clamp(34px,4.4vh,46px);border-radius:9px;background:#eceef1;display:flex;align-items:center;gap:8px;padding:0 12px}
+#launcher .lx-search i{width:22px;height:22px}
+#launcher .lx-search input{width:100%;min-width:0;border:0;background:none;outline:none!important;color:var(--ink)}
+#launcher .lx-search:focus-within{box-shadow:inset 0 0 0 2px #8d9afb}
+#launcher .lx-search input::placeholder{color:#656972}
+#launcher .lx-header-tools{display:flex;justify-content:flex-end;gap:4px}
+#launcher .lx-header-tools button,#launcher .lx-dialog-head button,#launcher .lx-back{display:grid;place-items:center;border-radius:50%;width:42px;height:42px;padding:9px}
+#launcher .lx-header-tools i,#launcher .lx-dialog-head i,#launcher .lx-back i{width:24px;height:24px}
+#launcher .lx-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scroll-padding-bottom:var(--lx-safe-bottom);scrollbar-width:thin;scrollbar-color:#c9cbd0 transparent}
+#launcher .lx-main{max-width:1700px;margin:0 auto;padding:0 var(--gutter) max(34px,var(--lx-safe-bottom))}
+#launcher .lx-tabs{display:flex;gap:3px;margin-bottom:18px;position:sticky;top:0;z-index:1;background:#fff;min-height:42px}
+#launcher .lx-tabs button{padding:9px 15px;border-bottom:2px solid transparent;color:var(--muted);font-size:16px}
+#launcher .lx-tabs button[aria-selected=true]{border-color:var(--ink);color:var(--ink);font-weight:600}
+#launcher .lx-friends{display:flex;gap:clamp(14px,2vw,30px);padding:1px 2px 4px;overflow-x:auto;scrollbar-width:none}
+#launcher .lx-friends button{flex:0 0 auto;display:flex;align-items:center;flex-direction:column;width:clamp(70px,8.3vw,108px);gap:7px;padding:0}
+#launcher .lx-friends .lx-portrait{width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;background:#f0f1f4}
+#launcher .lx-friends .lx-add{display:grid;place-items:center;color:#31343b}
+#launcher .lx-add i{width:43%;height:43%}
+#launcher .lx-friends span:last-child{font-size:clamp(11px,1.05vw,15px);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#launcher .lx-friend-activity{display:block;font:inherit;color:var(--muted)}
+#launcher .lx-section{margin:clamp(23px,3.4vh,38px) 0 0}
+#launcher .lx-section>h2,#launcher .lx-page-title{font-size:clamp(20px,1.85vw,29px);line-height:1.14;font-weight:700;margin:0 0 13px}
+#launcher .lx-section>h2 button{padding:0;display:inline-flex;align-items:center;gap:3px;font:inherit}
+#launcher .lx-section>h2 i{width:.9em;height:.9em}
+#launcher .lx-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(17px,2.2vh,28px) clamp(10px,1.3vw,20px)}
+#launcher .lx-cards.lx-squares{grid-template-columns:repeat(6,minmax(0,1fr))}
+#launcher .lx-card{min-width:0;display:flex;flex-direction:column;align-items:stretch;padding:0;gap:5px;border-radius:9px}
+#launcher .lx-card img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:9px;background:var(--soft);transition:filter .16s}
+#launcher .lx-squares img{aspect-ratio:1}
+#launcher .lx-card:hover img{filter:brightness(.91)}
+#launcher .lx-card .lx-card-title{font-weight:700;font-size:clamp(14px,1.22vw,20px);line-height:1.15;overflow:hidden;text-overflow:ellipsis}
+#launcher .lx-meta{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:clamp(12px,1vw,15px);line-height:1.2}
+#launcher .lx-meta i{width:1em;height:1em}
+#launcher .lx-plain{padding-top:clamp(13px,2.5vh,30px)}
+#launcher .lx-empty{padding:25px 0;color:var(--muted)}
+#launcher .lx-profile{display:flex;align-items:center;gap:18px;margin:5px 0 25px}
+#launcher .lx-profile img{width:72px;height:72px;border-radius:50%}
+#launcher .lx-detail .lx-header{display:none}
+#launcher .lx-back{margin:17px var(--gutter) 8px;border-radius:9px;background:var(--soft)}
+#launcher .lx-detail-inner{width:min(86%,1180px);margin:0 auto;padding:0 0 max(38px,var(--lx-safe-bottom))}
+#launcher .lx-detail-head{display:flex;align-items:center;gap:clamp(16px,2vw,35px)}
+#launcher .lx-detail-tile{width:clamp(130px,17.5vw,243px);aspect-ratio:1;object-fit:cover;border-radius:12px}
+#launcher .lx-detail-inner.lx-cover-pending .lx-detail-tile{background:#dedfe3;object-position:10000px}
+#launcher .lx-detail-inner.lx-meta-pending h1{opacity:.84}
+#launcher .lx-detail-inner.lx-meta-pending .lx-age,#launcher .lx-detail-inner.lx-meta-pending .lx-creator,#launcher .lx-detail-inner.lx-meta-pending .lx-chips button,#launcher .lx-detail-inner.lx-meta-pending .lx-square-button{color:transparent;background:#dedfe3;border-radius:4px}
+#launcher .lx-detail-inner.lx-meta-pending .lx-age{width:min(100%,16em)}
+#launcher .lx-detail-inner.lx-meta-pending .lx-chips i,#launcher .lx-detail-inner.lx-meta-pending .lx-square-button i{visibility:hidden}
+#launcher .lx-detail-inner.lx-hero-pending .lx-hero{background:#dedfe3}
+#launcher .lx-detail-inner.lx-hero-pending .lx-hero>*{opacity:0}
+#launcher .lx-detail-meta{min-width:0}
+#launcher h1{font-size:clamp(24px,2.5vw,45px);line-height:1.08;letter-spacing:-.025em;font-weight:700;margin-bottom:7px}
+#launcher .lx-detail-meta .lx-age{color:var(--muted);font-size:clamp(13px,1.15vw,17px)}
+#launcher .lx-creator{padding:4px 0;font-weight:600;font-size:clamp(14px,1.2vw,19px)}
+#launcher .lx-creator:hover{text-decoration:underline}
+#launcher .lx-play-row{margin-top:8px;display:flex;align-items:stretch;gap:7px}
+#launcher .lx-play{min-width:clamp(136px,17vw,260px);min-height:clamp(40px,4.6vw,58px);display:grid;place-items:center;background:var(--blue);color:#fff;border-radius:9px;padding:6px 18px;font-weight:700}
+#launcher .lx-play:hover{background:#263fd0}
+#launcher .lx-play:active,#launcher.join-pending [data-lx="play"]{background:#253fc5;box-shadow:inset 0 2px 4px #0818583d;transform:scale(.985)}
+#launcher .lx-play i{width:clamp(20px,2.4vw,34px);height:clamp(20px,2.4vw,34px)}
+#launcher .lx-square-button{width:clamp(41px,4.4vw,57px);display:grid;place-items:center;border-radius:9px;background:var(--soft)}
+#launcher .lx-square-button i{width:48%;height:48%}
+#launcher .lx-chips{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:clamp(17px,2.5vh,32px) 0 15px}
+#launcher .lx-chips button,#launcher .lx-secondary{background:var(--soft);padding:7px 12px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;font-size:clamp(13px,1.1vw,17px);font-weight:600}
+#launcher .lx-chips i{width:1em;height:1em}
+#launcher .lx-chips [aria-pressed=true],#launcher .lx-square-button[aria-pressed=true]{color:#324ada;background:#e5e9ff}
+#launcher .lx-hero{position:relative;display:block;width:100%;padding:0;border-radius:13px;overflow:hidden;background:var(--soft)}
+#launcher .lx-hero img{width:100%;aspect-ratio:2.12;object-fit:cover}
+#launcher .lx-hero>i{width:37px;height:37px;position:absolute;right:14px;top:14px;background:#f6f6f8d6;border-radius:50%;padding:10px}
+#launcher .lx-dialog{position:fixed;inset:var(--lx-safe-top) var(--lx-safe-right) var(--lx-safe-bottom) var(--lx-safe-left);margin:auto;width:min(445px,calc(100% - 30px));max-width:calc(100% - var(--lx-safe-left) - var(--lx-safe-right) - 14px);max-height:min(85vh,720px,calc(100% - var(--lx-safe-top) - var(--lx-safe-bottom) - 14px));overflow:auto;border:0;border-radius:15px;background:white;color:var(--ink);padding:18px 21px;box-shadow:0 16px 70px #0003;font:inherit;z-index:6}
+#launcher .lx-dialog::backdrop{background:rgba(10,12,17,.59)}
+#launcher .lx-dialog.lx-gallery{width:min(900px,95vw)}
+#launcher .lx-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:13px;margin-bottom:12px}
+#launcher .lx-dialog-head h2{font-size:22px}
+#launcher .lx-dialog-head button{width:34px;height:34px}
+#launcher .lx-dialog-head i{width:20px;height:20px}
+#launcher .lx-dialog-body p,#launcher #lx-dialog-body p{color:var(--muted);margin:9px 0 16px}
+#launcher .lx-dialog .lx-gallery-image{border-radius:9px;width:100%;max-height:64vh;object-fit:contain}
+#launcher .lx-dialog-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+#launcher .lx-primary{background:var(--blue);color:#fff;padding:9px 14px;border-radius:8px;font-weight:700}
+#launcher .lx-menu-row{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 3px;border-top:1px solid var(--line)}
+#launcher .lx-menu-row i{width:20px;height:20px}
+#launcher .lx-menu-row img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+#launcher .lx-conversation{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin:12px 0;max-height:40vh;overflow:auto}
+#launcher .lx-bubble{max-width:90%;padding:7px 13px;border-radius:12px;background:#e7ebff;overflow-wrap:anywhere}
+#launcher .lx-form{display:flex;gap:8px;margin:9px 0;flex-wrap:wrap}
+#launcher .lx-form input{min-width:70px;flex:1;background:#f3f4f7;border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+#launcher .lx-compact .lx-friends button{width:66px}
+#launcher .lx-toast{pointer-events:none;position:absolute;left:calc((100% + var(--lx-safe-left) - var(--lx-safe-right))/2);bottom:calc(20px + var(--lx-safe-bottom));transform:translate(-50%,8px);background:#24262c;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:.12s;z-index:8;max-width:min(90%,calc(100% - var(--lx-safe-left) - var(--lx-safe-right)));text-align:center}
+#launcher .lx-toast.lx-visible{opacity:1;transform:translate(-50%,0)}
+@media(max-width:730px){
+  #launcher{--rail:55px;--gutter:13px}
+  #launcher .lx-cards.lx-squares{grid-template-columns:repeat(5,minmax(0,1fr))}
+  #launcher .lx-detail-inner{width:91%}
+  #launcher .lx-header{grid-template-columns:auto 1fr auto}
+  #launcher .lx-header-tools{gap:0}
+  #launcher .lx-header-tools button{width:33px;height:33px;padding:6px}
+}
+@media(max-width:550px) and (orientation:portrait){
+  #launcher{--rail:0px;--gutter:14px}
+  #launcher .lx-rail{display:none}
+  #launcher .lx-nav-toggle{display:grid;place-items:center;width:44px;height:44px;border-radius:9px}
+  #launcher .lx-nav-toggle:hover{background:var(--soft)}
+  #launcher .lx-nav-toggle i{width:23px;height:23px}
+  #launcher .lx-detail-nav{display:flex;align-items:center;justify-content:space-between;padding-right:var(--gutter)}
+  #launcher .lx-detail .lx-scroll{display:flex;flex-direction:column}
+  #launcher .lx-detail-nav,#launcher .lx-detail-head,#launcher .lx-detail .lx-chips{flex:none}
+  #launcher .lx-detail-inner{display:flex;flex:1 0 auto;flex-direction:column;width:100%;padding:0}
+  #launcher .lx-detail-inner>.lx-detail-head,#launcher .lx-detail-inner>.lx-chips{margin-left:var(--gutter);margin-right:var(--gutter)}
+  #launcher .lx-detail-inner>.lx-hero{flex:1 0 auto;min-height:47vw;border-radius:12px 12px 0 0}
+  #launcher .lx-detail-inner>.lx-hero img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:35% center}
+  #launcher .lx-header{min-height:56px;grid-template-columns:44px auto minmax(0,1fr) auto;gap:4px}
+  #launcher .lx-brand{width:77px}
+  #launcher .lx-header-tools button{width:29px}
+  #launcher .lx-search{padding:0 6px;gap:3px}
+  #launcher .lx-tabs{margin-bottom:12px}
+  #launcher .lx-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #launcher .lx-cards.lx-squares{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:14px}
+  #launcher .lx-detail-tile{width:96px}
+  #launcher .lx-detail-head{gap:11px}
+  #launcher .lx-detail-meta h1{font-size:22px}
+  #launcher .lx-play{min-width:70px;min-height:36px}
+  #launcher .lx-square-button{width:34px}
+  #launcher .lx-chips{gap:4px}
+  #launcher .lx-chips button{padding:6px 8px}
+}
+@media(max-height:530px) and (orientation:landscape){
+  #launcher .lx-rail{padding-top:6px;gap:1px}
+  #launcher .lx-header{min-height:46px}
+  #launcher .lx-rail button{height:48px}
+  #launcher .lx-tabs{min-height:33px;margin-bottom:8px}
+  #launcher .lx-tabs button{padding:5px 12px}
+  #launcher .lx-friends button{width:55px;gap:3px}
+  #launcher .lx-section{margin-top:13px}
+  #launcher .lx-section>h2{margin-bottom:7px}
+}
+@media(prefers-reduced-motion:reduce){#launcher *{scroll-behavior:auto!important;transition:none!important}}
+@supports (-webkit-touch-callout:none){
+  #launcher .lx-form input,#launcher .lx-search input{font-size:max(16px,1em)}
+  #launcher .lx-dialog{max-height:min(85vh,720px,calc(100dvh - var(--lx-safe-top) - var(--lx-safe-bottom) - 14px))}
+}
+@media(min-width:751px) and (min-height:540px){
+  #launcher .lx-home .lx-main{padding-left:clamp(20px,2.38vw,40px);padding-right:clamp(25px,3.07vw,46px)}
+  #launcher .lx-home .lx-header{min-height:clamp(78px,8.3vw,106px);padding-top:clamp(18px,2.3vw,30px)}
+  #launcher .lx-home .lx-tabs{margin-bottom:clamp(18px,2.12vw,28px)}
+  #launcher .lx-home .lx-friends{gap:clamp(10px,1.28vw,18px);padding-left:0}
+  #launcher .lx-home:not(.lx-compact) .lx-friends button{width:clamp(78px,9.9vw,139px)}
+  #launcher .lx-home .lx-cards .lx-card img{margin-bottom:5px}
+  #launcher .lx-home .lx-squares .lx-card-title{min-height:2.3em}
+}
+
+#game-hud {
+  position: absolute; inset: 0; z-index: 8; pointer-events: none; color: #f7f7f8;
+  font: 500 clamp(13px, 1.55vmin, 17px)/1.35 "Builder Sans", "Segoe UI", Arial, sans-serif;
+  --gh-control: clamp(38px, 5.85vmin, 53px);
+  --gh-panel: rgba(20,21,24,.94);
+  --gh-line: rgba(255,255,255,.15);
+  --gh-jump-size: clamp(60px,10.7vw,136px);
+  --gh-right: max(4.25%,env(safe-area-inset-right),var(--gh-prompt-gutter,0px));
+  --gh-safe-top: env(safe-area-inset-top,0px); --gh-safe-right: env(safe-area-inset-right,0px);
+  --gh-safe-bottom: env(safe-area-inset-bottom,0px); --gh-safe-left: env(safe-area-inset-left,0px);
+  --gh-jump-bottom: max(12%,var(--gh-safe-bottom));
+}
+#game-hud * { box-sizing: border-box; }
+#game-hud[hidden], #game-hud [hidden] { display: none !important; }
+#game-hud button, #game-hud input, #game-hud select, #game-hud textarea { font: inherit; letter-spacing: normal; }
+#game-hud button {
+  cursor: pointer; color: inherit; background: transparent; border: 0; padding: 0; margin: 0;
+  text-align: center; border-radius: 0; box-shadow: none; text-transform: none; min-width: 0; min-height: 0;
+  pointer-events: auto; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+#game-hud button:hover { background-color: rgba(255,255,255,.1); }
+#game-hud button:focus-visible, #game-hud input:focus-visible, #game-hud select:focus-visible, #game-hud textarea:focus-visible {
+  outline: 2px solid #fff; outline-offset: -2px;
+}
+#game-hud .gh-toolbar { position: absolute; top: max(1.65%,env(safe-area-inset-top)); left: max(1.45%,env(safe-area-inset-left)); z-index: 4; display: flex; gap: calc(var(--gh-control)*.14); align-items: center; }
+#game-hud .gh-tool { width: var(--gh-control); height: var(--gh-control); display: grid; place-items: center; border-radius: 999px; }
+#game-hud .gh-logo, #game-hud .gh-tools { background: rgba(12,13,15,.85); }
+#game-hud .gh-logo:hover { background: rgba(32,33,36,.93); }
+#game-hud .gh-tools { display: flex; padding: 0 calc(var(--gh-control)*.07); border-radius: 999px; pointer-events: auto; }
+#game-hud .gh-tool[aria-expanded="true"] { background-color: rgba(74,75,79,.86); }
+#game-hud .gh-glyph { width: 59%; height: 59%; display: block; background-position: center; background-repeat: no-repeat; background-size: contain; }
+#game-hud .gh-logo-glyph { background-image: url("launcher/9171f4fb5a406bcd.png"); }
+#game-hud .gh-list-glyph { background-image: url("launcher/5627ff9742f64939.png"); }
+#game-hud .gh-chat-glyph { background-image: url("launcher/c854090be07f7b6a.png"); }
+#game-hud .gh-audio-glyph { background-image: url("launcher/9080ba57d105e756.png"); }
+#game-hud .gh-quick, #game-hud .gh-chatbox {
+  pointer-events: auto; position: absolute; z-index: 3;
+  top: calc(max(1.65%,env(safe-area-inset-top)) + var(--gh-control) + 8px);
+  left: max(1.45%,env(safe-area-inset-left)); background: var(--gh-panel); border: 1px solid var(--gh-line);
+  border-radius: 9px; color: #f5f5f8;
+}
+#game-hud .gh-quick { padding: 5px; min-width: 154px; display: grid; box-shadow: 0 8px 25px #0005; }
+#game-hud .gh-quick button { border-radius: 5px; text-align: left; padding: .65em .9em; }
+#game-hud .gh-chatbox { width: min(382px,48vw); height: clamp(145px,36%,275px); display: flex; flex-direction: column; overflow: hidden; background: rgba(18,20,23,.85); }
+#game-hud .gh-chat-tabs { display: flex; align-items: stretch; border-bottom: 1px solid var(--gh-line); }
+#game-hud .gh-chat-tabs button { flex: 1; padding: .55em .4em; font-weight: 700; color: #bbbcc2; border-bottom: 2px solid transparent; }
+#game-hud .gh-chat-tabs button[aria-pressed="true"] { color: #fff; border-bottom-color: #fff; }
+#game-hud .gh-chat-tabs .gh-chat-x { flex: 0 0 34px; font-size: 1.15em; }
+#game-hud .gh-messages, #game-hud .gh-phrases { flex: 1; min-height: 0; padding: .55em .8em; overflow-y: auto; font-size: .88em; overflow-wrap: anywhere; }
+#game-hud .gh-messages p { color: #f4f4f4; margin: 0 0 .38em; font-size: inherit; }
+#game-hud .gh-messages strong { color: #bee0ff; }
+#game-hud .gh-phrases { display: flex; flex-flow: row wrap; align-content: flex-start; gap: 6px; }
+#game-hud .gh-phrases button { border-radius: 18px; padding: .4em .75em; background: #43464c; }
+#game-hud .gh-chat-form { margin: 0; display: flex; padding: 4px; flex-shrink: 0; }
+#game-hud .gh-chat-form input { flex: 1; width: 0; border: 1px solid var(--gh-line); border-radius: 20px 0 0 20px; color: #fff; background: #1b1c20; padding: 6px 11px; }
+#game-hud .gh-chat-form button { border-radius: 0 20px 20px 0; background: #32353b; padding: 5px 12px; }
+#game-hud .gh-stick, #game-hud .gh-jump {
+  pointer-events: auto; touch-action: none; user-select: none; -webkit-user-select: none;
+  position: absolute; border-radius: 50%; background: rgba(18,19,20,.43);
+  border: max(2px,.36vmin) solid rgba(30,30,30,.56);
+  box-shadow: inset 0 0 0 max(1px,.27vmin) rgba(235,235,235,.35);
+}
+#game-hud .gh-stick { width: clamp(72px,13.2vw,170px); aspect-ratio: 1; bottom: max(5%,var(--gh-safe-bottom)); left: max(5%,var(--gh-safe-left)); display: grid; place-items: center; cursor: grab; }
+#game-hud .gh-stick:active { cursor: grabbing; }
+#game-hud .gh-stick span { width: 46%; height: 46%; border-radius: 50%; border: 2px solid rgba(20,21,20,.79); outline: 1px solid rgba(234,234,228,.62); background: rgba(217,218,211,.59); pointer-events: none; }
+#game-hud .gh-jump { width: var(--gh-jump-size); aspect-ratio: 1; right: var(--gh-right); bottom: var(--gh-jump-bottom); display: grid; place-items: center; }
+#game-hud .gh-jump span { width: 36%; height: 33%; background: rgba(230,230,221,.72); clip-path: polygon(50% 0%,100% 60%,88% 67%,70% 67%,70% 84%,30% 84%,30% 67%,13% 67%,0 59%,50% 0%,50% 91%,70% 91%,70% 99%,30% 99%,30% 91%,50% 91%); }
+#game-hud .gh-jump:active { background-color: rgba(70,72,70,.68); }
+#game-hud .gh-scene-action, #game-hud .gh-sprint {
+  position: absolute; display: flex; align-items: center; justify-content: center; border-radius: 999px;
+  color: #fff; background: rgba(18,19,21,.62); border: 1px solid rgba(236,236,234,.50);
+  text-shadow: 0 1px 2px #0008; touch-action: none; user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+#game-hud .gh-scene-action { right: var(--gh-right); bottom: calc(var(--gh-jump-bottom) + var(--gh-jump-size) + 8px); gap: 5px; min-height: 44px; padding: .32em .9em .32em .6em; max-width: min(220px,47vw); font-weight: 650; }
+#game-hud .gh-scene-action svg { width: 18px; height: 18px; flex: none; }
+#game-hud .gh-action-glyph { min-width: 1.45em; height: 1.45em; padding: 0 .2em; display: grid; place-items: center; color: #252629; background: #eee; border-radius: 999px; text-shadow: none; font: 700 .85em/1 Arial,sans-serif; }
+#game-hud .gh-action-glyph[data-glyph="cross"] { font-size: 1em; min-width: 1.20em; height: 1.20em; }
+#game-hud .gh-sprint { width: clamp(44px,calc(var(--gh-jump-size) * .62),76px); aspect-ratio: 1; right: calc(var(--gh-right) + var(--gh-jump-size) + 9px); bottom: max(10%,var(--gh-safe-bottom)); }
+#game-hud .gh-sprint svg { width: 55%; height: 55%; }
+#game-hud .gh-scene-action svg, #game-hud .gh-sprint svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+#game-hud .gh-sprint svg circle { fill: currentColor; stroke: none; }
+#game-hud .gh-native-prompts { position: absolute; inset: 0; pointer-events: none; }
+#game-hud .gh-native-prompts button { position: absolute; background: transparent; border-radius: 5px; }
+#game-hud .gh-native-prompts button:hover { background: rgba(255,255,255,.04); }
+#game-hud .gh-native-prompts button > * { display: none; }
+#game-hud .gh-prompt-tray {
+  position: absolute; top: calc(max(1.65%,env(safe-area-inset-top)) + var(--gh-control) + 8px);
+  right: max(2.3%,env(safe-area-inset-right)); display: grid; grid-template-columns: repeat(2,max-content);
+  gap: 4px; justify-items: stretch; width: max-content; max-width: 91vw; pointer-events: none;
+}
+#game-hud .gh-prompt-tray button { min-height: 44px; display: inline-flex; gap: .6em; align-items: center; justify-content: space-between; padding: .32em .65em; color: #fff; font-weight: 650; border: 1px solid #fff7; border-radius: 8px; background: rgba(15,16,18,.85); }
+#game-hud .gh-prompt-tray button:only-child { grid-column: 2; }
+#game-hud .gh-prompt-tray button:active, #game-hud .gh-prompt-tray button:hover { background: #393b3f; }
+#game-hud .gh-prompt-tray i { font: 700 .9em/1 Arial,sans-serif; min-width: 1.45em; min-height: 1.45em; display: grid; place-items: center; border-radius: 999px; background: #ededee; color: #252629; }
+#game-hud.gh-modal-open :is(.gh-prompt-tray,.gh-native-prompts) { visibility: hidden; }
+#game-hud .gh-scene-action:active, #game-hud .gh-sprint[data-held="true"] { background: rgba(79,80,84,.89); border-color: white; }
+#game-hud[data-stage="launch"] :is(.gh-jump,.gh-stick,.gh-scene-action,.gh-sprint) { display: none; }
+#game-hud .gh-shade { position: absolute; inset: 0; z-index: 2; pointer-events: auto; background: rgba(8,9,10,.55); display: grid; place-items: center; padding: max(8px,1.5vh,var(--gh-safe-top)) max(6px,1vw,var(--gh-safe-right)) max(8px,1.5vh,var(--gh-safe-bottom)) max(6px,1vw,var(--gh-safe-left)); }
+#game-hud .gh-menu {
+  display: flex; flex-direction: column; width: clamp(560px,75%,980px); max-width: 100%;
+  height: 86%; max-height: 750px; border-radius: 8px; padding: .7em 1.25em 1.1em;
+  color: #f4f4f5; background: rgba(17,18,20,.84); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  box-shadow: 0 3px 18px rgba(0,0,0,.13); animation: gh-rise .16s ease-out; overflow: hidden;
+}
+@keyframes gh-rise { from { transform: translateY(12px); opacity: .65; } }
+#game-hud .gh-tabs { display: flex; flex-shrink: 0; padding: 0; margin: 0; border-bottom: 1px solid var(--gh-line); }
+#game-hud .gh-tabs button { display: flex; gap: .5em; justify-content: center; align-items: center; flex: 1; padding: .75em .20em; color: #aaabb0; border-bottom: 2px solid transparent; }
+#game-hud .gh-tabs button[aria-current="page"] { border-bottom-color: white; color: white; }
+#game-hud .gh-tabs i { font-family: "Segoe UI Symbol",Arial,sans-serif; font-size: 1.35em; font-weight: 400; font-style: normal; line-height: 1; }
+#game-hud .gh-content { flex: 1; min-height: 0; overflow: auto; padding: 1.2em .5em; overscroll-behavior: contain; }
+#game-hud .gh-content h2 { font-size: 1.3em; line-height: 1.25; color: #fff; margin: .25em 0 .75em; font-weight: 700; }
+#game-hud .gh-content p { font-size: .97em; color: #c8c9cc; margin: .55em 0; }
+#game-hud .gh-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: .65em; }
+#game-hud .gh-heading h2 { margin: 0; }
+#game-hud .gh-row-switch { display:flex; gap: 3px; }
+#game-hud .gh-row-switch button { min-width: 32px; border-radius: 5px; padding: .25em .45em; }
+#game-hud .gh-row-switch button[aria-pressed="true"] { background: #44464d; }
+#game-hud .gh-player { display: inline-flex; flex-direction: column; gap: .08em; text-align: left; background: #1d1f23; border-radius: 7px; padding: .7em; }
+#game-hud .gh-player img { width: clamp(58px,10vw,130px); aspect-ratio: 1; border-radius: 4px; object-fit: cover; }
+#game-hud .gh-player strong { margin-top: .4em; }
+#game-hud .gh-player small { color: #bfc0c4; }
+#game-hud .gh-player.gh-player-list { width: 100%; display: grid; grid-template-columns: 50px 1fr; column-gap: .8em; align-items: center; }
+#game-hud .gh-player.gh-player-list img { grid-row: span 2; width: 50px; }
+#game-hud .gh-player.gh-player-list small { align-self: start; }
+#game-hud .gh-row { display: flex; align-items: center; justify-content: space-between; gap: 1em; min-height: 46px; padding: .45em .12em; border-bottom: 1px solid rgba(255,255,255,.065); }
+#game-hud .gh-row input[type="range"] { width: 38%; accent-color: #f4f4f5; }
+#game-hud .gh-row select, #game-hud .gh-report select, #game-hud .gh-report textarea { color: #fff; background: #2b2e34; border: 1px solid #5b5d63; padding: .4em .65em; border-radius: 5px; }
+#game-hud .gh-row select { min-width: 7em; max-width: 58%; }
+#game-hud .gh-footer, #game-hud .gh-confirm-actions, #game-hud .gh-actions { display: flex; gap: .55em; flex-shrink: 0; }
+#game-hud .gh-footer button, #game-hud .gh-confirm-actions button, #game-hud .gh-action { background: #36373d; border-radius: 6px; padding: .65em .95em; font-weight: 650; }
+#game-hud .gh-footer button { flex: 1; }
+#game-hud .gh-footer .gh-primary, #game-hud .gh-confirm-actions .gh-primary, #game-hud .gh-action.gh-primary { background: #334587; }
+#game-hud .gh-footer button:hover, #game-hud .gh-confirm-actions button:hover, #game-hud .gh-action:hover { background: #4e515b; }
+#game-hud .gh-confirm { min-height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
+#game-hud .gh-confirm-actions { margin-top: 1.25em; justify-content: center; }
+#game-hud .gh-confirm-actions button { min-width: 100px; }
+#game-hud .gh-report { display: grid; gap: .65em; max-width: 430px; }
+#game-hud .gh-report label { display: grid; gap: .25em; }
+#game-hud .gh-report textarea { resize: vertical; min-height: 48px; }
+#game-hud .gh-report .gh-action { justify-self: start; }
+#game-hud .gh-gallery { display: grid; grid-template-columns: repeat(auto-fit,minmax(125px,1fr)); gap: 9px; margin-top: 12px; }
+#game-hud .gh-gallery button { display:block; background: #26272d; border-radius: 5px; overflow: hidden; }
+#game-hud .gh-gallery img { width: 100%; max-height: 165px; object-fit: cover; display: block; }
+#game-hud .gh-shot-preview { display: block; width: 100%; max-height: 55%; object-fit: contain; margin-bottom: 8px; }
+#game-hud .gh-key { border: 1px solid #65676d; background: #303236; border-radius: 5px; color: #e8e9ec; padding: .18em .55em; font-weight: 600; white-space: nowrap; }
+#game-hud .gh-toast { position: absolute; z-index: 5; bottom: max(3%,env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: rgba(20,22,25,.94); color: white; padding: .6em 1em; border-radius: 8px; text-align: center; }
+@media (max-width:650px) {
+  #game-hud .gh-chatbox { width: min(85vw,370px); }
+  #game-hud .gh-menu { width: 95%; height: 78%; }
+  #game-hud .gh-tabs i { display: none; }
+}
+@media (max-height:500px) and (orientation:landscape) {
+  #game-hud .gh-menu { width: 79%; height: 96%; margin-left: 8%; }
+  #game-hud .gh-toolbar { z-index: 3; }
+  #game-hud.gh-modal-open .gh-tools { visibility: hidden; }
+  #game-hud .gh-chatbox { width: min(46vw,340px); height: 52%; }
+  #game-hud { --gh-jump-size: max(44px,19vh); }
+  #game-hud .gh-stick { width: 23vh; }
+  #game-hud .gh-content { padding-top: .65em; }
+}
+@media (prefers-reduced-motion:reduce) { #game-hud .gh-menu { animation: none; } }
+@supports (-webkit-touch-callout:none){
+  #game-hud .gh-chat-form input,#game-hud .gh-row select,#game-hud .gh-report select,#game-hud .gh-report textarea{font-size:max(16px,1em)}
+}
+
+#join-screen{position:fixed;inset:0;z-index:60;overflow:hidden;background:#17181e;touch-action:none;user-select:none}
+#join-screen[hidden]{display:none!important}
+#join-surface{display:block;width:100%;height:100%}
+#join-announcement{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+    #game-hud .gh-hidden-title{filter:blur(6px);user-select:none}
+  </style>
+<link rel="stylesheet" href="wardrobe.css">
+<script src="wardrobe-catalog.js"></script>
+<script src="wardrobe.js"></script>
+</head>
+<body>
+  <main id="launcher" aria-label="Roblox experience launcher">
+  <aside class="lx-rail" aria-label="Navigation">
+    <button type="button" data-lx="home" data-nav="home"><i data-ico="home"></i><span>Home</span></button>
+    <button type="button" data-lx="moments" data-nav="moments"><i data-ico="moments"></i><span>Moments</span></button>
+    <button type="button" data-lx="chat" data-nav="chat"><i data-ico="chat"></i><span>Chat</span></button>
+    <button type="button" data-lx="me" data-nav="me"><img src="launcher/e7dbdb877544afa0.webp" alt=""><span>Me</span></button>
+    <button type="button" data-lx="more"><i data-ico="more"></i><span>More</span></button>
+  </aside>
+  <div class="lx-shell">
+    <header class="lx-header">
+      <button type="button" class="lx-nav-toggle" data-lx="navigation" aria-label="Navigation menu" aria-haspopup="dialog" aria-controls="lx-dialog"><i data-ico="menu"></i></button>
+      <button type="button" class="lx-brand" data-lx="home" aria-label="Roblox home"><img src="launcher/9515629d0da8d601.webp" alt="Roblox"></button>
+      <form class="lx-search" role="search" id="lx-search-form"><i data-ico="search"></i><input id="lx-query" aria-label="Search experiences" placeholder="Search" autocomplete="off" type="search"></form>
+      <div class="lx-header-tools"><button type="button" data-lx="fullscreen" aria-label="Full screen" title="Full screen"><i data-ico="expand"></i></button><button type="button" data-lx="favorites" aria-label="Favorites" title="Favorites"><i data-ico="star"></i></button><button type="button" data-lx="notices" aria-label="Notifications" title="Notifications"><i data-ico="bell"></i></button></div>
+    </header>
+    <div id="lx-content" class="lx-scroll"></div>
+  </div>
+  <dialog class="lx-dialog" id="lx-dialog" aria-labelledby="lx-dialog-title">
+    <div class="lx-dialog-head"><h2 id="lx-dialog-title"></h2><button type="button" data-lx="close" aria-label="Close"><i data-ico="close"></i></button></div>
+    <div id="lx-dialog-body"></div>
+  </dialog>
+  <div class="lx-toast" id="lx-toast" role="status" aria-live="polite"></div>
+</main>
+
+  <section id="game-view" aria-label="Grand Theft Auto VI" hidden>
+    <div id="game-surface" aria-hidden="true">
+      <img id="game-cover" decoding="async" fetchpriority="low" data-entry-src="launcher/0f82991c8dbb60df.webp" alt="">
+      <video id="game-intro" data-media="cover" playsinline preload="none" disablepictureinpicture hidden></video>
+      <video id="game-ident" data-media="ident" playsinline preload="none" disablepictureinpicture hidden></video>
+      <video id="game-footage" data-media="game" playsinline preload="none" disablepictureinpicture hidden></video>
+    </div>
+    <section id="wardrobe" aria-label="Vestuario de Lucía" hidden>
+      <canvas id="wr-ambient" aria-hidden="true"></canvas>
+      <canvas id="wr-freeze" aria-hidden="true" hidden></canvas>
+      <div class="wr-tools">
+        <button type="button" class="wr-pill" data-wardrobe="categories" aria-expanded="false" aria-controls="wr-picker"><span aria-hidden="true">☰</span> Secciones</button>
+        <button type="button" class="wr-pill wr-replay" data-wardrobe="replay" aria-label="Repetir animación" title="Repetir animación">↻</button>
+      </div>
+      <div id="wr-picker" class="wr-picker" aria-label="Secciones de la tienda" hidden></div>
+      <button class="wr-enter" type="button" data-wardrobe="enter" aria-label="Ver el conjunto del maniquí"></button>
+      <div class="wr-mobile-item"><canvas id="wr-info" aria-hidden="true"></canvas></div>
+      <div id="wr-options" aria-label="Variantes de la prenda"></div>
+      <div class="wr-variants">
+        <button type="button" data-wardrobe="prev" aria-label="Prenda anterior">‹</button>
+        <button type="button" data-wardrobe="next" aria-label="Prenda siguiente">›</button>
+      </div>
+      <div class="wr-bottom">
+        <button type="button" data-wardrobe="jacket" aria-label="Mostrar chaqueta" hidden>Chaqueta</button>
+        <button type="button" data-wardrobe="save" aria-label="Guardar prenda">Guardar</button>
+        <button type="button" data-wardrobe="confirm" aria-label="Ponerse esta prenda">Ponerse</button>
+        <button type="button" data-wardrobe="back" aria-label="Volver a las secciones">Volver</button>
+      </div>
+      <div id="wr-status" class="wr-status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section id="game-hud" aria-label="Roblox controls" data-stage="launch" tabindex="-1" hidden>
+  <div class="gh-toolbar">
+    <button type="button" class="gh-logo gh-tool" data-gh="menu" title="Roblox menu (Esc)" aria-label="Roblox menu" aria-expanded="false"><i class="gh-glyph gh-logo-glyph"></i></button>
+    <div class="gh-tools">
+      <button type="button" class="gh-tool" data-gh="tools" title="Experience controls" aria-label="Experience controls" aria-expanded="false"><i class="gh-glyph gh-list-glyph"></i></button>
+      <button type="button" class="gh-tool" data-gh="chat" title="Chat (/)" aria-label="Chat" aria-expanded="false"><i class="gh-glyph gh-chat-glyph"></i></button>
+      <button type="button" class="gh-tool" data-gh="audio" title="Audio settings" aria-label="Audio settings"><i class="gh-glyph gh-audio-glyph"></i></button>
+    </div>
+  </div>
+  <div class="gh-quick" hidden aria-label="Experience controls">
+    <button type="button" data-gh="settings">Settings</button>
+    <button type="button" data-gh="gallery">Gallery</button>
+    <button type="button" data-gh="help">Help</button>
+  </div>
+  <section class="gh-chatbox" hidden aria-label="Experience chat">
+    <div class="gh-chat-tabs"><button type="button" data-gh="here">Here</button><button type="button" data-gh="phrases">Quick chat</button><button type="button" class="gh-chat-x" data-gh="close-chat" aria-label="Close chat">×</button></div>
+    <div class="gh-messages" role="log" aria-live="polite"></div>
+    <div class="gh-phrases" hidden>
+      <button type="button" data-phrase="Hey!">Hey!</button><button type="button" data-phrase="Let's go!">Let’s go!</button><button type="button" data-phrase="Nice ride!">Nice ride!</button><button type="button" data-phrase="GG">GG</button>
+    </div>
+    <form class="gh-chat-form"><input type="text" maxlength="180" autocomplete="off" placeholder="Tap here to chat" aria-label="Message"><button type="submit" aria-label="Send message" title="Send message">➤</button></form>
+  </section>
+  <div class="gh-stick" role="group" aria-label="Drag to move camera" title="Drag to move camera"><span></span></div>
+  <button type="button" class="gh-jump" data-gh="jump" aria-label="Jump camera" title="Jump (Space)"><span></span></button>
+  <button type="button" class="gh-scene-action" data-gh="act" hidden aria-keyshortcuts="E">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg><i class="gh-action-glyph" aria-hidden="true" hidden></i><span></span>
+  </button>
+  <button type="button" class="gh-sprint" data-gh="sprint" aria-label="Hold to speed up playback" aria-keyshortcuts="Shift" title="Hold to speed up (Shift)">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15.3" cy="4.4" r="1.9"/><path d="m4 13 3.9-.7 3-4.8 3.4 2.1 2.2 3.7 3.9.4M12.3 9.4 10 14.5l4.1 2.3 1 4.4M10.3 14.8 7 19.4l-4 .5"/></svg>
+  </button>
+  <div class="gh-shade" hidden>
+    <section class="gh-menu" role="dialog" aria-modal="true" aria-label="Roblox menu" tabindex="-1">
+      <nav aria-label="Menu tabs" class="gh-tabs">
+        <button type="button" data-tab="people"><i>♧</i><span>People</span></button>
+        <button type="button" data-tab="settings"><i>⚙</i><span>Settings</span></button>
+        <button type="button" data-tab="gallery"><i>▧</i><span>Gallery</span></button>
+        <button type="button" data-tab="report"><i>⚑</i><span>Report</span></button>
+        <button type="button" data-tab="help"><i>ⓘ</i><span>Help</span></button>
+      </nav>
+      <div class="gh-content"></div>
+      <div class="gh-footer"><button type="button" data-gh="leave">Leave</button><button type="button" data-gh="respawn">Respawn</button><button type="button" class="gh-primary" data-gh="resume">Resume</button></div>
+    </section>
+  </div>
+  <div class="gh-toast" role="status" hidden></div>
+</section>
+
+    <button id="enable-game-audio" type="button" hidden>Enable sound</button>
+    <div id="playback-message" hidden><span id="playback-note" role="status"></span><button id="playback-action" type="button">Play</button></div>
+  </section>
+  <div id="join-screen" hidden aria-hidden="true">
+  <canvas id="join-surface" aria-hidden="true"></canvas>
+  <span id="join-announcement" role="status" aria-live="polite"></span>
+  <div hidden aria-hidden="true">
+    <img data-join-image="window" decoding="async" data-entry-src="launcher/c99ce938ef23c654.webp" alt="">
+    <img data-join-image="tile" decoding="async" data-entry-src="launcher/992d18231337c844.webp" alt="">
+    <img data-join-image="name" decoding="async" data-entry-src="launcher/1b16ba3a3fbf35b3.webp" alt="">
+    <img data-join-image="status" decoding="async" data-entry-src="launcher/e99ab2eac9b14e19.webp" alt="">
+    <img data-join-image="sheet0" decoding="async" data-entry-src="launcher/51d9ae76aa05b151.webp" alt="">
+    <img data-join-image="sheet1" decoding="async" data-entry-src="launcher/2b41531dd63ee2b3.webp" alt="">
+    <img data-join-image="sheet2" decoding="async" data-entry-src="launcher/ff83b1d6c4a695cc.webp" alt="">
+  </div>
+</div>
+
+  
+
+
+  <script>
+(() => {
+  'use strict';
+  const screen = document.getElementById('join-screen');
+  const canvas = document.getElementById('join-surface');
+  const status = document.getElementById('join-announcement');
+  const context = canvas.getContext('2d', {alpha:false});
+  const images = Object.fromEntries([...screen.querySelectorAll('[data-join-image]')].map(image => [image.dataset.joinImage,image]));
+  // Source is iPad video at 60 Hz, starting when its play button first changes state.
+  const tapFrame = 731, coverFrame = 766, gameFrame = 958;
+  const coverMs = (coverFrame-tapFrame)*1000/60;
+  const durationMs = (gameFrame-tapFrame)*1000/60;
+  const statuses = ['Waiting for an available server','Waiting for an available server','Waiting for an available server. Retrying...(1)','Joining server'];
+  // Original frames' measured tile geometry, foreground/scene opacity and edge gradient RGB values.
+  const frames = [[420,330,0,0,69,72,85,0,0,0],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,0,0,35,37,43,19,21,25],[420,330,92,0,35,37,43,19,21,25],[420,330,97,73,30,33,39,17,19,21],[420,330,104,85,30,32,38,17,19,21],[420,330,110,97,30,32,38,16,18,20],[420,330,118,109,29,31,37,16,18,20],[420,330,126,109,28,31,36,16,18,20],[420,330,135,121,28,31,35,16,18,20],[420,330,143,134,28,30,36,16,18,20],[420,330,153,134,28,30,35,15,17,19],[420,330,161,146,27,29,35,15,17,19],[420,330,170,158,27,29,35,15,17,19],[420,330,179,158,27,29,33,15,17,19],[420,330,187,158,26,29,32,15,17,19],[420,330,196,170,25,28,32,15,17,19],[420,330,204,170,25,29,32,15,17,19],[420,330,212,170,24,28,31,14,16,18],[420,330,221,194,24,26,30,14,16,18],[420,330,230,194,24,26,30,14,16,18],[420,330,239,219,24,26,30,14,16,18],[420,330,247,219,24,25,29,13,15,17],[420,330,255,219,23,25,29,13,15,17],[420,330,255,219,23,25,29,13,15,17],[420,330,255,243,22,24,28,15,15,17],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,243,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,29,12,14,18],[420,330,255,255,21,23,29,12,14,18],[420,330,255,255,21,23,29,12,14,18],[420,330,255,255,21,23,29,12,14,18],[420,330,255,255,21,23,29,12,14,18],[420,330,255,255,21,23,29,12,14,18],[420,330,255,255,21,23,29,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,28,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,26,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,21,23,27,12,14,18],[420,330,255,255,19,21,27,12,14,18],[426,322,255,255,19,21,27,12,14,18],[434,310,223,231,21,23,29,12,14,18],[436,306,217,231,21,23,29,12,14,18],[438,306,216,231,21,23,29,12,14,18],[440,298,209,219,22,24,30,13,15,17],[444,294,195,219,21,23,30,12,14,18],[446,290,190,194,22,24,31,13,15,17],[448,290,183,182,23,25,32,13,15,17],[450,286,176,182,23,25,32,13,15,19],[452,282,167,182,23,25,32,13,15,19],[454,278,152,158,24,26,33,14,16,18],[458,274,147,158,24,26,33,14,16,20],[458,274,147,158,24,26,33,14,16,20],[458,270,137,158,24,26,33,14,16,20],[458,270,137,158,24,26,33,14,16,20],[466,262,117,121,25,28,35,15,17,19],[470,254,105,109,25,28,35,15,17,21],[470,254,100,97,26,29,36,15,17,19],[470,254,100,97,26,29,36,15,17,19],[472,250,96,97,26,29,36,15,17,19],[478,242,80,97,26,29,36,15,17,21],[478,238,77,85,27,30,37,16,18,20],[478,238,78,85,27,30,37,16,18,20],[482,234,67,73,27,30,37,16,18,22],[486,226,48,61,28,31,38,16,18,22],[488,226,46,61,29,32,41,17,19,23],[490,222,36,49,29,32,39,17,19,23],[492,214,31,36,29,32,41,17,19,23],[496,214,24,24,30,33,40,17,19,23],[498,206,18,24,30,33,40,17,19,23],[500,206,11,12,30,33,40,18,20,24],[502,198,3,0,31,34,41,18,20,24],[502,198,0,0,19,21,25,14,14,16]];
+  let currentFrame = -1, drawnFrame = -1, lastStatus = '';
+
+
+  let prepared, resolved=false;
+  function prepare() {
+    if (prepared) return prepared;
+    prepared=Promise.all(Object.values(images).map(image=>{
+      const loaded=new Promise(resolve=>{
+        image.onload=image.onerror=resolve;
+      });
+      image.src=image.dataset.entrySrc;
+      return image.decode ? image.decode().catch(()=>{}) : loaded;
+    })).then(()=>{resolved=true;});
+    return prepared;
+  }
+  function hide() {
+    screen.hidden=true;
+    screen.setAttribute('aria-hidden','true');
+    status.textContent=lastStatus='';
+    currentFrame=drawnFrame=-1;
+  }
+  function render(force=false) {
+    if (currentFrame<coverFrame || screen.hidden) return;
+    const rect=canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const density=Math.min(3,window.devicePixelRatio||1);
+    const pixelsWide=Math.round(rect.width*density), pixelsHigh=Math.round(rect.height*density);
+    if (canvas.width!==pixelsWide || canvas.height!==pixelsHigh) {
+      canvas.width=pixelsWide; canvas.height=pixelsHigh; force=true;
+    }
+    if (currentFrame===drawnFrame && !force) return;
+    drawnFrame=currentFrame;
+    const width=rect.width, height=rect.height;
+    const index=currentFrame-coverFrame, params=frames[index];
+    const [tileTop,tileSize,textAlpha,backAlpha,tr,tg,tb,br,bg,bb] = params;
+    const scale=Math.min(height/1488,width/(height>width?1050:1450));
+    const cx=width/2, cy=height/2, shrink=tileSize/330;
+    const posY=y=>cy+(y-744)*scale;
+    const ready=image=>image.complete && image.naturalWidth>0;
+    const draw=(key,...args)=>{if (ready(images[key])) context.drawImage(images[key],...args);};
+    context.setTransform(pixelsWide/width,0,0,pixelsHigh/height,0,0);
+    context.imageSmoothingEnabled=true;
+    context.imageSmoothingQuality='high';
+    context.globalAlpha=1;
+    const gradient = context.createLinearGradient(0,0,0,height);
+    gradient.addColorStop(0,`rgb(${tr},${tg},${tb})`);
+    gradient.addColorStop(.42,`rgb(${tr},${tg},${tb})`);
+    gradient.addColorStop(1,`rgb(${br},${bg},${bb})`);
+    context.fillStyle=gradient;context.fillRect(0,0,width,height);
+    if (currentFrame===coverFrame) { draw('window',0,0,width,height); return; }
+    if (backAlpha>0 && ready(images.tile)) {
+      context.globalAlpha=.13*backAlpha/255;
+      const fit=Math.max(width/images.tile.naturalWidth,height/images.tile.naturalHeight);
+      const drift=(currentFrame-coverFrame)/192;
+      const zoom=1.03+.045*drift, bw=images.tile.naturalWidth*fit*zoom, bh=images.tile.naturalHeight*fit*zoom;
+      draw('tile',(width-bw)*(.25+.25*drift),(height-bh)*.56,bw,bh);
+    }
+    if (textAlpha && currentFrame!==957) {
+      context.globalAlpha=textAlpha/255;
+      context.fillStyle='rgba(24,25,30,.79)';
+      const pw=1258*scale*shrink, ph=318*scale*shrink;
+      context.beginPath(); context.roundRect(cx-pw/2,cy-ph/2,pw,ph,16*scale*shrink);context.fill();
+    }
+    if (currentFrame!==957) {
+      context.globalAlpha=1;
+      const size=tileSize*scale,ty=posY(tileTop);
+      context.save();context.beginPath();context.roundRect(cx-size/2,ty,size,size,13*scale*shrink);context.clip();
+      // Sample the artwork directly from its high-resolution source. Only the moving
+      // reflection is stored in the animation atlas, so tablet pixel density is preserved.
+      const artAlpha=Math.min(1,Math.max(0,(currentFrame-793)/3))*textAlpha/255;
+      if (artAlpha>0) {
+        context.globalAlpha=artAlpha;
+        draw('tile',cx-size/2,ty,size,size);
+      }
+      context.globalAlpha=1;
+      const cell=96, sx=(index%8)*cell, sy=(Math.floor(index/8)%8)*cell;
+      const image=images['sheet'+Math.floor(index/64)];
+      if (ready(image)) context.drawImage(image,sx,sy,cell,cell,cx-size/2,ty,size,size);
+      context.restore();
+      if (textAlpha) {
+        context.globalAlpha=textAlpha/255;
+        const ds=scale*shrink, nameY=posY(795+(1-shrink)*21);
+        draw('name',cx-210*ds,nameY-32*ds,420*ds,64*ds);
+      }
+    }
+    context.globalAlpha=1;
+    const row=currentFrame===767?0:currentFrame<798?1:currentFrame<889?2:3;
+    draw('status',0,row*36,408,36,cx-204*scale,height-64*scale,408*scale,36*scale);
+    if (lastStatus!==statuses[row]) { lastStatus=statuses[row];status.textContent=lastStatus; }
+  }
+  function paint(elapsedMs) {
+    if (!Number.isFinite(elapsedMs) || elapsedMs<coverMs || elapsedMs>=durationMs) {
+      if (!screen.hidden) hide();
+      return false;
+    }
+    currentFrame=Math.min(gameFrame-1,tapFrame+Math.floor(elapsedMs*60/1000+1e-6));
+    if (screen.hidden) {screen.hidden=false;screen.setAttribute('aria-hidden','false');}
+    render();
+    return true;
+  }
+  for (const image of Object.values(images)) image.addEventListener('load',()=>render(true));
+  window.addEventListener('resize',()=>render(true),{passive:true});
+  if (window.ResizeObserver) new ResizeObserver(()=>render(true)).observe(canvas);
+  window.JoinScreen=Object.freeze({paint,hide,coverMs,durationMs,prepare,get ready(){return resolved;}});
+})();
+
+</script>
+<script>
+(() => {
+  'use strict';
+  const view = document.querySelector('#game-view');
+  const launcher = document.querySelector('#launcher');
+  const title = document.querySelector('#game-cover');
+  const intro = document.querySelector('#game-intro');
+  const ident = document.querySelector('#game-ident');
+  const footage = document.querySelector('#game-footage');
+  const videos = [intro,ident,footage];
+  const feedback = document.querySelector('#playback-message');
+  const note = document.querySelector('#playback-note');
+  const action = document.querySelector('#playback-action');
+  const enableAudio = document.querySelector('#enable-game-audio');
+  const pauses = new Set();
+  let phase = 'home', generation = 0;
+  let entryFrame = null, entryStarted = null, elapsedBeforePause = 0;
+  let rate = 1, sensitivity = 1, fit = 'cover';
+  let volume = .65, soundNeedsTap = false, sprintHeld = false;
+  let shownAction;
+  const shop=createWardrobe({
+    video:footage, play:()=>startVideo(footage),
+    reveal:()=>showDecodedFrame(footage),
+    blocked:()=>phase!=='playing'||pauses.size>0
+  });
+  let vectorX = 0, vectorY = 0, panX = 0, panY = 0, zoom = 1, lift = 0;
+  let jumpStart = null, lastTick = 0, animation = null;
+  const limit = (value,low,high) => Math.max(low,Math.min(high,value));
+
+  function setPhase(next) {
+    phase=next;
+    shownAction=undefined;
+    view.dataset.phase=next;
+    if(next!=='home' && next!=='joining') window.GameHUD.setStage(next==='playing'?'playing':'launch');
+  }
+  function activeVideo() { return phase==='title'?intro:phase==='ident'?ident:phase==='playing'?footage:null; }
+  function freezeEntryClock() {
+    if(entryFrame!==null) cancelAnimationFrame(entryFrame);
+    entryFrame=null;
+    if(entryStarted===null)return;
+    elapsedBeforePause+=performance.now()-entryStarted;
+    entryStarted=null;
+  }
+  function paintEntry() {
+    entryFrame=null;
+    if(entryStarted===null || pauses.size)return;
+    const elapsed=elapsedBeforePause+performance.now()-entryStarted;
+    if(phase==='joining'){
+      if(elapsed<window.JoinScreen.durationMs) {
+        window.JoinScreen.paint(elapsed);
+        if(elapsed>=window.JoinScreen.coverMs && !launcher.hidden){
+          launcher.hidden=true;
+          view.hidden=false;
+        }
+      }else{
+        launcher.hidden=true;
+        launcher.classList.remove('join-pending');
+        view.hidden=false;
+        freezeEntryClock();
+        window.GameHUD.mount();
+        setPhase('title');
+        if(!title.complete || !title.naturalWidth) {
+          const token=generation;
+          const revealTitle=()=>{if(token===generation && phase==='title')window.JoinScreen.hide();};
+          title.addEventListener('load',revealTitle,{once:true});
+          intro.addEventListener('loadeddata',revealTitle,{once:true});
+          if(intro.readyState>=2)revealTitle();
+        } else window.JoinScreen.hide();
+        intro.hidden=false;
+        syncAudio();
+        startVideo(intro);
+      }
+    }
+    if(phase==='joining') entryFrame=requestAnimationFrame(paintEntry);
+  }
+  function runEntryClock() {
+    if(entryStarted!==null || pauses.size || phase!=='joining')return;
+    if(!window.JoinScreen.ready) {
+      const token=generation;
+      window.JoinScreen.prepare().then(()=>{if(token===generation)runEntryClock();});
+      return;
+    }
+    entryStarted=performance.now();
+    paintEntry();
+  }
+  function hideFeedback() { feedback.hidden=true; }
+  function showFeedback(message,label) {
+    note.textContent=message;
+    action.textContent=label;
+    feedback.hidden=false;
+  }
+  function startVideo(video) {
+    if(pauses.size || video!==activeVideo() || (video===footage && !shop.wantsPlay())) return;
+    const token=generation;
+    hideFeedback();
+    video.play().catch(error=>{
+      if(token!==generation || video!==activeVideo() || pauses.size || error.name==='AbortError') return;
+      if(error.name==='NotAllowedError' && !video.muted) {
+        soundNeedsTap=true; syncAudio(); startVideo(video);
+      } else if(error.name==='NotAllowedError') showFeedback('Tap to start playback.','Play');
+      else showFeedback('The clip could not start.','Retry');
+    });
+  }
+  function showDecodedFrame(video) {
+    const token=generation;
+    const reveal=()=>{
+      if(video!==activeVideo() || generation!==token) return;
+      video.style.opacity='1';
+      title.hidden=true;
+      if(video!==intro) intro.hidden=true;
+      if(video===footage) ident.hidden=true;
+    };
+    if(video.readyState>=2) reveal();
+    else if(video.requestVideoFrameCallback) video.requestVideoFrameCallback(reveal);
+  }
+  function beginFootage(rewind) {
+    hideFeedback();
+    freezeEntryClock();
+    intro.pause(); ident.pause();
+    setPhase('playing');
+    footage.hidden=false;
+    footage.loop=false;
+    sprint(false); syncAudio(); resetCamera();
+    window.GameHUD.setAction(null);
+    shop.start();
+  }
+  function suspend(reason) {
+    if(phase==='home' || pauses.has(reason)) return;
+    pauses.add(reason); freezeEntryClock();
+    activeVideo()?.pause();
+    sprint(false);
+    syncAudio();
+    vectorX=vectorY=0;
+  }
+  function wake(reason) {
+    pauses.delete(reason);
+    syncAudio();
+    if(pauses.size || phase==='home') return;
+    if(phase==='joining') runEntryClock();
+    else if(phase==='playing') shop.resume();
+    else if(activeVideo()) startVideo(activeVideo());
+  }
+  function clearRuntime() {
+    generation++;
+    shop.reset();
+    freezeEntryClock();
+    elapsedBeforePause=0;
+    window.JoinScreen.hide();
+    launcher.classList.remove('join-pending');
+    pauses.clear(); hideFeedback();
+    soundNeedsTap=false; enableAudio.hidden=true;
+    sprint(false);
+    videos.forEach(video=>{
+      video.pause(); video.hidden=true; video.style.opacity='0';
+      if(video.readyState>=1) video.currentTime=0;
+    });
+    title.hidden=false;
+    resetCamera();
+  }
+  function goHome() {
+    if(phase==='home') return;
+    clearRuntime();
+    setPhase('home');
+    window.GameHUD.unmount();
+    view.hidden=true; launcher.hidden=false; launcher.inert=false;
+    window.Launcher.show('home');
+  }
+  function startExperience() {
+    if(phase!=='home') return;
+    clearRuntime();
+    launcher.inert=true;
+    launcher.classList.add('join-pending');
+    const cover=document.getElementById('game-cover');
+    if(!cover.hasAttribute('src')) cover.src=cover.dataset.entrySrc;
+    setPhase('joining');
+    if(document.hidden) pauses.add('hidden');
+    runEntryClock();
+    const token=generation;
+    setTimeout(()=>{
+      if(token!==generation || phase==='home') return;
+      const suffix=wardrobeMobileQuality()?'-720':'';
+      intro.src='intro/cover'+suffix+'.mp4';
+      intro.preload='auto'; intro.load();
+      const prepareIdent=()=>{
+        if (generation!==token || phase==='home')return;
+        ident.src='intro/ident'+suffix+'.mp4';
+        ident.preload='auto'; ident.load();
+      };
+      if(intro.readyState>=3)prepareIdent();
+      else intro.addEventListener('canplay',prepareIdent,{once:true});
+    },0);
+  }
+  function resetCamera() {
+    if(animation!==null) cancelAnimationFrame(animation);
+    animation=null; jumpStart=null; lastTick=0;
+    vectorX=vectorY=panX=panY=lift=0; zoom=1;
+    footage.style.transform='none';
+  }
+  function tick(now) {
+    animation=null;
+    if(phase!=='playing') return;
+    const dt=lastTick?Math.min((now-lastTick)/1000,.06):1/60;
+    lastTick=now;
+    const moving=Boolean(vectorX||vectorY);
+    const ease=Math.min(1,dt*(moving?4:3));
+    panX+=(vectorX*.048*limit(sensitivity,.25,1.5)-panX)*ease;
+    panY+=(vectorY*.035*limit(sensitivity,.25,1.5)-panY)*ease;
+    lift=0;
+    if(jumpStart!==null){
+      const progress=(now-jumpStart)/500;
+      if(progress>=1) jumpStart=null;
+      else lift=Math.sin(Math.PI*progress)*.026;
+    }
+    const neededZoom=1+2.1*Math.max(Math.abs(panX),Math.abs(panY-lift));
+    zoom=neededZoom;
+    footage.style.transform=`translate3d(${(-100*panX).toFixed(3)}%,${(100*(lift-panY)).toFixed(3)}%,0) scale(${zoom.toFixed(4)})`;
+    if(moving || jumpStart!==null || Math.abs(panX)+Math.abs(panY)>.0003) animation=requestAnimationFrame(tick);
+    else resetCamera();
+  }
+  function requestTick() { if(animation===null) {lastTick=0; animation=requestAnimationFrame(tick);} }
+  function control(x,y) {
+    if(phase!=='playing' || pauses.size || !shop.aisle()) { vectorX=vectorY=0; return; }
+    vectorX=limit(Number(x)||0,-1,1); vectorY=limit(Number(y)||0,-1,1); requestTick();
+  }
+  function jump() {
+    if(phase!=='playing'||pauses.size||!shop.aisle()||jumpStart!==null) return;
+    jumpStart=performance.now(); requestTick();
+  }
+  function performAction() {
+    if(phase==='playing' && !pauses.size) shop.action();
+  }
+  function sprint(down) {
+    sprintHeld=Boolean(down) && phase==='playing' && shop.aisle() && !pauses.size;
+    footage.playbackRate=sprintHeld?Math.min(4,rate*1.6):rate;
+  }
+  function snapshot() {
+    if(phase==='home'||phase==='joining') return null;
+    const video=activeVideo();
+    const img=video && video.readyState>=2 ? video : title;
+    const sw=img.videoWidth||img.naturalWidth,sh=img.videoHeight||img.naturalHeight;
+    if(!sw||!sh||!view.clientWidth||!view.clientHeight) return null;
+    const canvas=document.createElement('canvas');
+    const size=Math.min(1,1280/Math.max(view.clientWidth,view.clientHeight));
+    canvas.width=Math.max(1,Math.round(view.clientWidth*size));
+    canvas.height=Math.max(1,Math.round(view.clientHeight*size));
+    const ctx=canvas.getContext('2d'); if(!ctx)return null;
+    const w=canvas.width,h=canvas.height;
+    ctx.fillStyle=img===title?'#180a1c':'#101115'; ctx.fillRect(0,0,w,h);
+    if(img===footage) return shop.snapshot();
+    const cover=true;
+    const z=img===footage?zoom:1;
+    const ratio=(cover?Math.max(w/sw,h/sh):Math.min(w/sw,h/sh))*z;
+    const x=(w-sw*ratio)/2-(img===footage?panX*w:0);
+    const y=(h-sh*ratio)/2+(img===footage?(lift-panY)*h:0);
+    ctx.drawImage(img,x,y,sw*ratio,sh*ratio);
+    return canvas.toDataURL('image/jpeg',.83);
+  }
+  function syncAudio() {
+    for(const video of videos) {
+      video.volume=volume;
+      video.muted=video===footage || soundNeedsTap || volume===0;
+    }
+    enableAudio.hidden=!(soundNeedsTap && volume>0 && activeVideo() && activeVideo()!==footage && !pauses.size);
+  }
+  function setVolume(value) {
+    volume=limit(Number(value)||0,0,1);
+    syncAudio();
+  }
+  enableAudio.addEventListener('click',()=>{
+    const video=activeVideo();
+    if(!video) return;
+    soundNeedsTap=false;syncAudio();startVideo(video);
+  });
+
+  for(const video of videos){
+    video.addEventListener('playing',()=>showDecodedFrame(video));
+    video.addEventListener('error',()=>{
+      if(video===activeVideo() && (video!==footage || shop.failed()))showFeedback('The clip could not load.','Retry');
+    });
+  }
+  intro.addEventListener('ended',()=>{
+    if(phase!=='title')return;
+    setPhase('ident');
+    shop.prepare();
+    ident.hidden=false;
+    syncAudio();
+    startVideo(ident);
+  });
+  ident.addEventListener('ended',()=>{if(phase==='ident')beginFootage(true);});
+  action.addEventListener('click',()=>{
+    const video=activeVideo();
+    if(!video) return;
+    if(video===footage)shop.retry();else { if(video.error)video.load(); startVideo(video); }
+  });
+  document.addEventListener('visibilitychange',()=>document.hidden?suspend('hidden'):wake('hidden'));
+  window.addEventListener('blur',()=>{control(0,0);sprint(false);});
+  window.Player={
+    pause:()=>suspend('menu'), resume:()=>wake('menu'), leave:goHome,
+    restart:()=>{ if(phase!=='home'){ pauses.delete('menu');beginFootage(true); } },
+    setVolume, setRate:value=>{rate=limit(Number(value)||1,.25,3);sprint(sprintHeld);},
+    setFit:value=>{fit=value==='cover'?'cover':'contain';footage.style.objectFit=fit; resetCamera();},
+    setSensitivity:value=>{sensitivity=limit(Number(value)||1,.1,3);},
+    control,jump,snapshot,performAction,sprint,
+    get stage(){return phase;}, get paused(){return pauses.size>0;}
+  };
+  window.startExperience=startExperience;
+})();
+
+</script>
+<script>
+(() => {
+  "use strict";
+  const root = document.getElementById("game-hud");
+  if (!root) return;
+  const $ = (s) => root.querySelector(s);
+  const $$ = (s) => [...root.querySelectorAll(s)];
+  const byAction = (a) => $('[data-gh="' + a + '"]');
+  const shade = $(".gh-shade"), menu = $(".gh-menu"), content = $(".gh-content");
+  const quick = $(".gh-quick"), chat = $(".gh-chatbox"), chatInput = $(".gh-chat-form input");
+  const stick = $(".gh-stick"), knob = $(".gh-stick span");
+  const sprintButton = byAction("sprint"), sceneAction = byAction("act");
+  const prefsKey = "gamerlito.wardrobe.hud.prefs.v2", reportsKey = "gamerlito.wardrobe.hud.notes.v1";
+  function load(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+  }
+  function store(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+  }
+  const choices = { rate: [0.75,1,1.25,1.5], fit: ["cover","contain"], sensitivity: [0.55,1,1.6] };
+  const currentPrefs = load(prefsKey,null);
+  const saved = currentPrefs || {...load("gamerlito.wardrobe.hud.prefs.v1",{}),fit:"cover"};
+  const settings = { volume: 0.65, feedback: false, rate: 1, fit: "cover", sensitivity: 1 };
+  for (const [key, values] of Object.entries(choices)) if (values.includes(saved?.[key])) settings[key] = saved[key];
+  if (Number.isFinite(saved?.volume)) settings.volume = Math.min(1, Math.max(0, saved.volume));
+  settings.feedback = saved?.feedback === true;
+  if(!currentPrefs) store(prefsKey,settings);
+  let reports = load(reportsKey, []);
+  if (!Array.isArray(reports)) reports = [];
+  let active = false, tab = "people", dialog = "", chatTab = "here", view = "grid", stage = "launch";
+  let messages = [], shots = [], selectedShot = null, selectedPointer = null, toastTimer = null, audioContext;
+  const keys = new Set();
+  const sprintKeys = new Set();
+  let sprintPointer = null, sprinting = false;
+  const player = (action,...args) => window.Player?.[action]?.(...args);
+  const escape = (text) => String(text).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function clickTone() {
+    if (!settings.feedback || !settings.volume) return;
+    try {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state !== "running") audioContext.resume().catch(()=>{});
+      const oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
+      const t = audioContext.currentTime;
+      oscillator.type = "sine"; oscillator.frequency.setValueAtTime(540,t);
+      oscillator.frequency.exponentialRampToValueAtTime(370,t+.055);
+      gain.gain.setValueAtTime(0.035*settings.volume,t);
+      gain.gain.exponentialRampToValueAtTime(.0001,t+.065);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.onended=()=>{oscillator.disconnect();gain.disconnect();};
+      oscillator.start(t); oscillator.stop(t+.07);
+    } catch { /* Buttons remain usable when the browser has no audio output. */ }
+  }
+  function applySettings() {
+    player("setVolume", settings.volume); player("setRate",settings.rate);
+    player("setFit",settings.fit); player("setSensitivity",settings.sensitivity);
+  }
+  function toast(message) {
+    clearTimeout(toastTimer);
+    $(".gh-toast").textContent=message; $(".gh-toast").hidden=false;
+    toastTimer=setTimeout(()=>{ $(".gh-toast").hidden=true; },2200);
+  }
+  function stopMovement() {
+    keys.clear();
+    sprintKeys.clear();
+    const pointer = sprintPointer;
+    sprintPointer = null;
+    if (pointer !== null && sprintButton.hasPointerCapture(pointer)) sprintButton.releasePointerCapture(pointer);
+    syncSprint();
+    if (selectedPointer !== null && stick.hasPointerCapture?.(selectedPointer)) stick.releasePointerCapture(selectedPointer);
+    selectedPointer = null;
+    knob.style.transform = "";
+    player("control",0,0);
+  }
+  function syncSprint() {
+    const held = sprintPointer !== null || sprintKeys.size > 0;
+    if (sprinting === held) return;
+    sprinting = held;
+    sprintButton.dataset.held = String(held);
+    player("sprint",held);
+  }
+  function setAction(label) {
+    const text = typeof label === "string" ? label.trim() : "";
+    if (!text && document.activeElement === sceneAction) root.focus({preventScroll:true});
+    sceneAction.hidden = !text;
+    sceneAction.querySelector("span").textContent = text;
+    sceneAction.title = text ? text+" (E)" : "";
+    const glyph = /^(talk|greet)\b/i.test(text) ? "cross" : /^interact$/i.test(text) ? "L2" : "";
+    const badge = sceneAction.querySelector(".gh-action-glyph");
+    badge.hidden = !glyph;
+    badge.dataset.glyph = glyph;
+    badge.textContent = glyph === "cross" ? "×" : glyph;
+    sceneAction.querySelector("svg").toggleAttribute("hidden",Boolean(glyph));
+  }
+  function canAct() {
+    return active && stage === "playing" && shade.hidden && chat.hidden && quick.hidden;
+  }
+  function hideQuick() { quick.hidden=true; byAction("tools").setAttribute("aria-expanded","false"); }
+  function setChatTab(next) {
+    chatTab=next;
+    $(".gh-messages").hidden=next!=="here"; $(".gh-phrases").hidden=next==="here";
+    byAction("here").setAttribute("aria-pressed",String(next==="here"));
+    byAction("phrases").setAttribute("aria-pressed",String(next==="phrases"));
+  }
+  function closeChat() {
+    if (chat.contains(document.activeElement)) document.activeElement.blur();
+    chat.hidden=true; byAction("chat").setAttribute("aria-expanded","false");
+  }
+  function showChat(focus) {
+    if (!shade.hidden) closeMenu(false);
+    hideQuick(); stopMovement();
+    chat.hidden=false; setChatTab("here"); byAction("chat").setAttribute("aria-expanded","true");
+    if(focus) chatInput.focus({preventScroll:true});
+  }
+  function renderMessages() {
+    const box=$(".gh-messages"); box.replaceChildren();
+    const note=document.createElement("p"); note.textContent="👋 Say hi to everyone playing now!"; box.append(note);
+    for (const message of messages) {
+      const line=document.createElement("p"), author=document.createElement("strong");
+      author.textContent="Rzrobiiz: "; line.append(author,document.createTextNode(message)); box.append(line);
+    }
+    box.scrollTop=box.scrollHeight;
+  }
+  function sendMessage(raw) {
+    const value=String(raw).trim().slice(0,180);
+    if (!value) return;
+    messages.push(value); if (messages.length>80) messages.shift();
+    chatInput.value=""; setChatTab("here"); renderMessages();
+  }
+  function closeMenu(focus=true) {
+    if (shade.hidden) return;
+    shade.hidden=true; dialog=""; root.classList.remove("gh-modal-open"); byAction("menu").setAttribute("aria-expanded","false");
+    player("resume");
+    if(focus) root.focus({preventScroll:true});
+  }
+  function showMenu(next="people") {
+    closeChat(); hideQuick(); stopMovement(); tab=next; dialog="";
+    const wasClosed=shade.hidden;
+    shade.hidden=false; root.classList.add("gh-modal-open"); byAction("menu").setAttribute("aria-expanded","true");
+    if(wasClosed) player("pause");
+    renderMenu();
+    menu.focus({preventScroll:true});
+  }
+  function confirm(action) {
+    dialog=action; renderMenu(); $('[data-gh="cancel"]').focus({preventScroll:true});
+  }
+  const actionButton=(action,label,primary=false)=>'<button type="button" class="gh-action'+(primary?' gh-primary':'')+'" data-gh="'+action+'">'+label+'</button>';
+  function picker(key, label, options) {
+    return '<label class="gh-row"><span>'+label+'</span><select data-pref="'+key+'">'+options.map(([v,s])=>'<option value="'+v+'"'+(String(v)===String(settings[key])?' selected':'')+'>'+s+'</option>').join("")+'</select></label>';
+  }
+  function person() {
+    return '<div class="gh-heading"><h2>In this server</h2><div class="gh-row-switch"><button type="button" aria-label="Grid view" aria-pressed="'+(view==="grid")+'" data-gh="grid">▦</button><button type="button" aria-label="List view" aria-pressed="'+(view==="list")+'" data-gh="list">☷</button></div></div>'+
+      '<button type="button" class="gh-player '+(view==="list"?'gh-player-list':'')+'" data-gh="profile"><img src="launcher/ee506ee9693c698a.webp" alt=""><strong>Rzrobiiz</strong></button>';
+  }
+  function settingsBody() {
+    return '<h2>Audio</h2><label class="gh-row"><span>Volume <small class="gh-vol-value">'+Math.round(settings.volume*100)+'%</small></span><input aria-label="Volume" type="range" min="0" max="100" value="'+Math.round(settings.volume*100)+'" data-pref="volume"></label>'+
+      picker("feedback","Interface sounds",[[false,"Off"],[true,"On"]])+
+      '<h2 style="margin-top:1em">Experience</h2>'+
+      picker("rate","Playback speed",choices.rate.map(v=>[v,v+"×"]))+
+      picker("fit","Display",[['cover','Fill screen'],['contain','Fit to screen']])+
+      picker("sensitivity","Camera sensitivity",[[.55,"Low"],[1,"Normal"],[1.6,"High"]]);
+  }
+  function gallery() {
+    return '<div class="gh-heading"><h2>Gallery</h2>'+actionButton("capture","Capture",true)+'</div>'+
+      (!shots.length?'<p>Your captures appear here.</p>':'<div class="gh-gallery">'+shots.map((s,i)=>'<button type="button" data-shot="'+i+'" aria-label="Open capture '+(i+1)+'"><img src="'+s+'" alt="Capture '+(i+1)+'"></button>').join("")+'</div>');
+  }
+  function report() {
+    const recent = reports.length ? '<p>Latest note · '+escape(reports[0].kind)+' · '+escape(reports[0].note)+'</p>' : '';
+    return '<h2>Report an issue</h2><form class="gh-report"><label>Category<select name="kind"><option>Playback</option><option>Controls</option><option>Interface</option></select></label><label>What happened?<textarea name="note" required maxlength="300" placeholder="Describe the issue"></textarea></label><p>Notes are saved on this device.</p><button type="submit" class="gh-action gh-primary">Save note</button></form>'+recent;
+  }
+  function help() {
+    const rows=[["Change clothing","Swatches / ← →"],["Wear clothing","Ponerse / Enter or E"],["Replay animation","↻ / R"],["Browse sections","Secciones / Esc"],["Open chat","Chat / slash"],["Open Roblox menu","Roblox logo"]];
+    return '<h2>Controls</h2>'+rows.map(([name,key])=>'<div class="gh-row"><span>'+name+'</span><span class="gh-key">'+key+'</span></div>').join("");
+  }
+  function renderMenu() {
+    const modal=dialog==="respawn"||dialog==="leave";
+    $(".gh-tabs").hidden=modal; $(".gh-footer").hidden=modal;
+    $$(".gh-tabs [data-tab]").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===tab?"page":"false"));
+    if (modal) {
+      const leave=dialog==="leave";
+      content.innerHTML='<div class="gh-confirm"><h2>'+(leave?'Are you sure you want to leave the game?':'Are you sure you want to respawn your character?')+'</h2><div class="gh-confirm-actions">'+actionButton("confirm",leave?"Leave":"Respawn",true)+actionButton("cancel",leave?"Don’t Leave":"Don’t Respawn")+'</div></div>';
+    } else if (dialog==="profile") {
+      content.innerHTML='<h2>Player profile</h2><div class="gh-player"><img src="launcher/ee506ee9693c698a.webp" alt="Player avatar"><strong>Rzrobiiz</strong></div><p class="gh-hidden-title">Grand Theft Auto VI</p>'+actionButton("back","Back to People");
+    } else if (dialog==="photo" && shots[selectedShot]) {
+      content.innerHTML='<h2>Capture '+(selectedShot+1)+'</h2><img class="gh-shot-preview" src="'+shots[selectedShot]+'" alt="Captured frame"><div class="gh-actions">'+actionButton("download","Save image",true)+actionButton("delete-shot","Delete")+actionButton("back","Back")+'</div>';
+    } else {
+      content.innerHTML=({people:person,settings:settingsBody,gallery,report,help}[tab]||person)();
+    }
+    content.scrollTop=0;
+  }
+  function reset() {
+    stopMovement(); hideQuick(); closeChat(); shade.hidden=true; dialog=""; tab="people"; view="grid"; selectedShot=null;
+    root.classList.remove("gh-modal-open"); byAction("menu").setAttribute("aria-expanded","false");
+    chatInput.value=""; clearTimeout(toastTimer); $(".gh-toast").hidden=true;
+    messages=[]; renderMessages(); setChatTab("here");
+  }
+  function mount() {
+    active=true; root.hidden=false; reset(); setStage("launch"); applySettings();
+  }
+  function setStage(value) {
+    stage=value==="playing"?"playing":"launch"; root.dataset.stage=stage;
+    if (stage!=="playing") { stopMovement(); setAction(null); }
+  }
+  function unmount() {
+    if(root.contains(document.activeElement)) document.activeElement.blur();
+    active=false; root.hidden=true; reset();
+  }
+  function persistPref(input) {
+    const key=input.dataset.pref;
+    if (key==="volume") settings.volume=Math.max(0,Math.min(1,Number(input.value)/100));
+    else if (key==="feedback") settings.feedback=input.value==="true";
+    else if (key==="fit") settings.fit=input.value==="contain"?"contain":"cover";
+    else if (choices[key]?.includes(Number(input.value))) settings[key]=Number(input.value);
+    else return;
+    if(key==="volume") {
+      const display=$(".gh-vol-value"); if(display) display.textContent=Math.round(settings.volume*100)+"%";
+      player("setVolume",settings.volume);
+    } else applySettings();
+    store(prefsKey,settings);
+  }
+  async function capture() {
+    let shot;
+    try { shot=await player("snapshot"); } catch {}
+    if(!active||shade.hidden||tab!=="gallery") return;
+    if(typeof shot!=="string" || !/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=\r\n]+$/.test(shot)) { toast("This frame isn’t ready yet."); return; }
+    shots.unshift(shot); shots=shots.slice(0,8); dialog=""; renderMenu(); toast("Capture saved to Gallery");
+  }
+  function handle(action) {
+    if (action==="menu") { if(shade.hidden) showMenu(); else closeMenu(); }
+    else if (action==="tools") { if(!shade.hidden) closeMenu(false); closeChat(); stopMovement(); quick.hidden=!quick.hidden; byAction("tools").setAttribute("aria-expanded",String(!quick.hidden)); }
+    else if (action==="chat") { if(chat.hidden) showChat(false); else closeChat(); }
+    else if (action==="close-chat") closeChat();
+    else if (action==="audio"||action==="settings") showMenu("settings");
+    else if (action==="gallery"||action==="help") showMenu(action);
+    else if (action==="here"||action==="phrases") setChatTab(action);
+    else if (action==="jump") { if(stage==="playing"&&shade.hidden) player("jump"); }
+    else if (action==="act" && canAct() && !sceneAction.hidden) player("performAction");
+    else if (action==="resume") closeMenu();
+    else if (action==="leave"||action==="respawn") confirm(action);
+    else if (action==="confirm") {
+      const leave=dialog==="leave";
+      if(leave) { unmount(); player("leave"); }
+      else { reset(); player("restart"); }
+    }
+    else if (action==="cancel"||action==="back") { dialog=""; selectedShot=null; renderMenu(); }
+    else if (action==="grid"||action==="list") { view=action; renderMenu(); }
+    else if (action==="profile") { dialog="profile"; renderMenu(); }
+    else if (action==="capture") capture();
+    else if (action==="download"&&shots[selectedShot]) {
+      const a=document.createElement("a"); a.href=shots[selectedShot]; a.download="Gamerlito-capture-"+(selectedShot+1)+"."+((a.href.match(/^data:image\/(\w+)/)||[])[1]||"png").replace("jpeg","jpg"); document.body.append(a); a.click(); a.remove();
+    } else if(action==="delete-shot"&&shots[selectedShot]) { shots.splice(selectedShot,1); selectedShot=null; dialog=""; renderMenu(); }
+  }
+  root.addEventListener("click",e=>{
+    if(!active) return;
+    if(e.target===shade) { if(dialog==="leave"||dialog==="respawn") { dialog=""; renderMenu(); } else closeMenu(); return; }
+    const b=e.target.closest("button"); if (!b||!root.contains(b)) return;
+    clickTone();
+    if (b.dataset.gh) handle(b.dataset.gh);
+    else if(b.dataset.tab) { tab=b.dataset.tab; dialog=""; selectedShot=null; renderMenu(); }
+    else if(b.dataset.phrase) sendMessage(b.dataset.phrase);
+    else if(b.dataset.shot!==undefined) { selectedShot=Number(b.dataset.shot); dialog="photo"; renderMenu(); }
+  });
+  root.addEventListener("submit",e=>{
+    if(!active) return;
+    if(e.target.matches(".gh-chat-form")) { e.preventDefault(); sendMessage(chatInput.value); chatInput.focus(); }
+    if(e.target.matches(".gh-report")) {
+      e.preventDefault(); const f=e.target, note=f.elements.note.value.trim(); if(!note) { f.elements.note.focus(); return; }
+      reports.unshift({kind:f.elements.kind.value,note:note.slice(0,300)}); reports=reports.slice(0,10);
+      const ok=store(reportsKey,reports); renderMenu(); toast(ok?"Note saved on this device":"Note saved for this session");
+    }
+  });
+  root.addEventListener("input",e=>{ if(e.target.dataset.pref==="volume") persistPref(e.target); });
+  root.addEventListener("change",e=>{ if(e.target.dataset.pref) { persistPref(e.target); clickTone(); } });
+  function drift(x,y) {
+    const mag=Math.max(1,Math.hypot(x,y)), dx=x/mag, dy=y/mag;
+    const r=stick.getBoundingClientRect().width*.23;
+    knob.style.transform="translate("+dx*r+"px,"+dy*r+"px)"; player("control",dx,dy);
+  }
+  function movePointer(e) {
+    if(e.pointerId!==selectedPointer) return;
+    const r=stick.getBoundingClientRect(), span=Math.max(1,r.width*.35);
+    drift((e.clientX-r.left-r.width/2)/span,(e.clientY-r.top-r.height/2)/span);
+  }
+  stick.addEventListener("pointerdown",e=>{
+    if (!active||stage!=="playing"||!shade.hidden||selectedPointer!==null) return;
+    e.preventDefault(); selectedPointer=e.pointerId; stick.setPointerCapture(e.pointerId); movePointer(e);
+  });
+  stick.addEventListener("pointermove",movePointer);
+  sprintButton.addEventListener("pointerdown",e=>{
+    if(!canAct() || e.button!==0 || sprintPointer!==null) return;
+    e.preventDefault(); sprintPointer=e.pointerId;
+    sprintButton.setPointerCapture(e.pointerId); syncSprint();
+  });
+  ["pointerup","pointercancel","lostpointercapture"].forEach(evt=>sprintButton.addEventListener(evt,e=>{
+    if(e.pointerId===sprintPointer) { sprintPointer=null; syncSprint(); }
+  }));
+  sprintButton.addEventListener("contextmenu",e=>e.preventDefault());
+  ["pointerup","pointercancel","lostpointercapture"].forEach(evt=>stick.addEventListener(evt,e=>{
+    if(e.pointerId===selectedPointer) { selectedPointer=null; knob.style.transform=""; player("control",0,0); }
+  }));
+  const dirs={ArrowUp:[0,-1],KeyW:[0,-1],ArrowDown:[0,1],KeyS:[0,1],ArrowLeft:[-1,0],KeyA:[-1,0],ArrowRight:[1,0],KeyD:[1,0]};
+  function keyboardMovement() {
+    let x=0,y=0;
+    for(const k of keys) { x+=dirs[k][0]; y+=dirs[k][1]; }
+    drift(x,y);
+  }
+  function isTyping(node) { return node?.matches?.("input,select,textarea,[contenteditable=true]"); }
+  document.addEventListener("keydown",e=>{
+    if(!active || e.ctrlKey||e.metaKey||e.altKey) return;
+    if(e.key==="Escape") {
+      e.preventDefault(); e.stopPropagation();
+      if(e.repeat) return;
+      if(!shade.hidden) { if(dialog) { dialog=""; renderMenu(); } else closeMenu(); }
+      else if(!chat.hidden) closeChat(); else if(!quick.hidden) hideQuick(); else showMenu();
+      return;
+    }
+    if(!shade.hidden) {
+      if(e.key==="Tab") {
+        const items=[...menu.querySelectorAll("button,select,textarea,input")].filter(n=>n.getClientRects().length&&!n.disabled);
+        if(items.length && (e.shiftKey&&(document.activeElement===items[0]||document.activeElement===menu)||!e.shiftKey&&document.activeElement===items.at(-1))) {
+          e.preventDefault(); (e.shiftKey?items.at(-1):items[0]).focus();
+        }
+      }
+      return;
+    }
+    if(isTyping(e.target)) return;
+    if(e.key==="/"&&!e.repeat) { e.preventDefault(); showChat(true); return; }
+    if(stage!=="playing") return;
+    if(canAct() && e.code==="KeyE" && !sceneAction.hidden) {
+      e.preventDefault();
+      if(!e.repeat) handle("act");
+      return;
+    }
+    if(canAct() && (e.code==="ShiftLeft" || e.code==="ShiftRight" || (e.target===sprintButton && (e.code==="Space" || e.code==="Enter")))) {
+      e.preventDefault();
+      if(!e.repeat) { sprintKeys.add(e.code); syncSprint(); }
+      return;
+    }
+    if(dirs[e.code]) { e.preventDefault(); keys.add(e.code); keyboardMovement(); }
+    if(e.code==="Space"&&!e.repeat&&!e.target.closest?.("button,a")) { e.preventDefault(); player("jump"); }
+  });
+  document.addEventListener("keyup",e=>{
+    if(sprintKeys.delete(e.code)) { e.preventDefault(); syncSprint(); }
+    if(active&&keys.delete(e.code)) { e.preventDefault(); keyboardMovement(); }
+  });
+  window.addEventListener("blur",()=>{ if(active) stopMovement(); });
+  document.addEventListener("visibilitychange",()=>{ if(active&&document.hidden) stopMovement(); });
+  window.GameHUD={mount,reset,setStage,setAction,unmount,isBlocking:()=>active&&(!shade.hidden||isTyping(document.activeElement)),openMenu:showMenu};
+})();
+
+</script>
+<script>
+(() => {
+  'use strict';
+  const root = document.getElementById('launcher');
+  const shell = root.querySelector('.lx-shell');
+  const content = root.querySelector('#lx-content');
+  const query = root.querySelector('#lx-query');
+  const dialog = root.querySelector('#lx-dialog');
+  const dialogBody = root.querySelector('#lx-dialog-body');
+  const toast = root.querySelector('#lx-toast');
+  const paths = {
+    menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',
+    home:'<path d="m3 10 9-7 9 7v10h-6v-6H9v6H3z"/>',
+    moments:'<path d="m5 2 16 4-4 16-16-4z"/><path d="m9 8 6 4-7 2z"/>',
+    chat:'<path d="M3 4h18v13h-6l-4 4v-4H3z"/><path d="M7 9h10m-10 4h6"/>',
+    more:'<circle cx="12" cy="12" r="9"/><path d="M7.9 12h.2m3.8 0h.2m3.8 0h.2"/>',
+    search:'<circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/>',
+    star:'<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.2L5.8 21 7 14.2l-5-4.9 6.9-1z"/>',
+    bell:'<path d="M4 17c2.1-3.3 2-5 2.5-7a5.6 5.6 0 0 1 11 0c.5 2 .4 3.7 2.5 7z"/><path d="M9.6 20a3 3 0 0 0 4.8 0"/>',
+    plus:'<path d="M15 21v-7m-3.5 3.5h7"/><path d="M14 4H6l-1 7h8zm-4 10H6c-2 0-3 3-3 6h7"/>',
+    next:'<path d="m9 4 8 8-8 8"/>',
+    back:'<path d="m15 4-8 8 8 8"/>',
+    like:'<path d="M3 10h3v11H3zM9 10l5-7c1-1 3 0 2.5 2l-1 4H20a1.5 1.5 0 0 1 1.4 2l-2.1 8a2 2 0 0 1-2 1.5H9z"/>',
+    people:'<circle cx="9" cy="7" r="3"/><path d="M3 20v-3a6 6 0 0 1 12 0v3zm12-15a3 3 0 0 1 0 6m2 2c3 0 4 3 4 6"/>',
+    close:'<path d="m6 6 12 12m0-12L6 18"/>',
+    play:'<path fill="currentColor" stroke="none" d="M5 2.5c0-.8.8-1 1.5-.6l15.1 9.2a1 1 0 0 1 0 1.8L6.5 22.1C5.8 22.5 5 22.3 5 21.5Z"/>',
+    share:'<path d="m14 3 7 6-7 6v-4c-5.5 0-8.4 2-11 7 .6-8 4-11.5 11-12z"/>',
+    expand:'<path d="M15 4h5v5m0-5-7 7M9 20H4v-5m0 5 7-7"/>',
+    image:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 18 6-6 3 3 4-5 5 6"/>',
+    edit:'<path d="m4 16 12-12 4 4L8 20l-5 1z"/>',
+    check:'<path d="m3 12 6 6L21 5"/>',
+    settings:'<path d="M3 7h18M3 17h18"/><circle cx="8" cy="7" r="2.6" fill="white"/><circle cx="16" cy="17" r="2.6" fill="white"/>'
+  };
+  const icons = node => node.querySelectorAll('i[data-ico]').forEach(i => {
+    if (i.childElementCount) return;
+    const p=paths[i.dataset.ico];
+    if (p) i.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+  });
+  const ico = n => '<i data-ico="'+n+'"></i>';
+  const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const namePattern=()=>/\b(?:grand[\s-]+theft[\s-]+auto(?:[\s-]*(?:vi|6))?|gta(?:[\s-]*(?:vi|6))?)\b/gi;
+  function visibleText(text){
+    const s=String(text);
+    let html='',start=0;
+    for(const match of s.matchAll(namePattern())){
+      html+=esc(s.slice(start,match.index))+'<span class="lx-hidden-name">'+esc(match[0])+'</span>';
+      start=match.index+match[0].length;
+    }
+    return html+esc(s.slice(start));
+  }
+  const maskInput=input=>input.classList.toggle('lx-hidden-input',namePattern().test(input.value));
+  const hiddenCreator='<span class="lx-hidden-name" aria-hidden="true">Game creator</span>';
+  const games = [
+    {id:'gta',name:'Grand Theft Auto VI',aliases:['gta','gta6','gta 6','gta vi','gtavi','grand theft auto 6'],img:'launcher/992d18231337c844.webp',hero:'launcher/87a89308fbccb2b3.webp',rating:100},
+    {id:'egg',name:'Steal An Egg',img:'launcher/c0b1b2b1c83dbb5e.webp',rating:91},
+    {id:'mm2',name:'Murder Mystery 2',img:'launcher/12b244e5d98bbd3f.webp',rating:90},
+    {id:'hospital',name:'Animal Hospital (Anomaly)',img:'launcher/58b29309838ee324.webp',hero:'launcher/42a7400b6c02f3dc.webp',rating:92},
+    {id:'hunt',name:'The Hunt: Roblox 20',img:'launcher/2c4f5dfdacc8a817.webp',rating:83},
+    {id:'creepy',name:'Climb the Creepypasta Tower',img:'launcher/aa13bfe819765b18.webp',rating:63},
+    {id:'corner',name:'The Corner [18+]',img:'launcher/76ac454293fee6f5.webp',rating:85},
+    {id:'tsunami',name:'Survive Your Ideas',img:'launcher/69c12b798f6edac8.webp',rating:89},
+    {id:'roworld',name:'RoWorld [World PvP]',img:'launcher/fc05b3f1c2dd65cb.webp',rating:83},
+    {id:'pool',name:'[ABILITIES] CRAZY 8 Ball',img:'launcher/d721fdedb3d2dd64.webp',rating:98}
+  ];
+  const getGame = id => games.find(g=>g.id===id) || games[0];
+  const people = [
+    {name:'rafa2026rblox',img:'launcher/930d1dc3d96dd3b2.webp'},{name:'MoxZ',img:'launcher/9b65cde048bbad91.webp'},
+    {name:'Rzrobiz',img:'launcher/e7dbdb877544afa0.webp'},{name:'rip_mercury',img:'launcher/dae645cff8bc2859.webp'},
+    {name:'luiza_star96',img:'launcher/32eb9bc847452929.webp'},{name:'Albacona',img:'launcher/4c05f79037cd64b4.webp'},
+    {name:'Marii',img:'launcher/095a57cf70c1cc27.webp'}
+  ];
+  const defaults = {favorites:[],likes:[],alerts:[],friends:[],messages:[],name:'Rzrobiz',compact:false};
+  let saved;
+  try { saved=JSON.parse(localStorage.getItem('gamerlito-wardrobe-launcher-v1')||'{}')||{}; }
+  catch { saved={}; }
+  const data={...defaults,...saved};
+  for (const key of ['favorites','likes','alerts','friends','messages']) if (!Array.isArray(data[key])) data[key]=[];
+  const persist=()=>{try{localStorage.setItem('gamerlito-wardrobe-launcher-v1',JSON.stringify(data));}catch{}};
+  let page='home', selection='gta', detailOrigin='home', modal='', selectedPerson=0, homeScroll=0, timer;
+  const localGame = () => getGame(selection);
+  function notify(message) {
+    clearTimeout(timer);toast.textContent=message;toast.classList.add('lx-visible');
+    timer=setTimeout(()=>toast.classList.remove('lx-visible'),1800);
+  }
+  function toggle(key,id) {
+    const list=data[key],index=list.indexOf(id);
+    if(index<0) list.push(id); else list.splice(index,1);
+    persist();return index<0;
+  }
+  const button=(id,label,icon,css='lx-secondary',extra='')=>'<button type="button" class="'+css+'" data-lx="'+id+'" '+extra+'>'+(icon?ico(icon):'')+label+'</button>';
+  function card(g, wide=false){
+    const src=(wide?g.hero:null)||g.img;
+    return '<button type="button" class="lx-card" data-lx="details" data-id="'+g.id+'" aria-label="'+esc(g.name)+'"><img alt="" decoding="async" data-lx-src="'+src+'"><span class="lx-card-title">'+visibleText(g.name)+'</span><span class="lx-meta">'+ico('like')+g.rating+'%</span></button>';
+  }
+  function grid(list,square=true){
+    return '<div class="lx-cards'+(square?' lx-squares':'')+'">'+list.map(g=>card(g,!square)).join('')+'</div>';
+  }
+  function section(label,list,square,target){
+    const title=target?'<button type="button" data-lx="'+target+'">'+label+ico('next')+'</button>':label;
+    return '<section class="lx-section"><h2>'+title+'</h2>'+grid(list,square)+'</section>';
+  }
+  function tabs() {
+    return '<nav class="lx-tabs" aria-label="Discovery" role="tablist">'+
+      button('home','For you',null,'','role="tab" aria-selected="'+(page==='home')+'"')+
+      button('charts','Charts',null,'','role="tab" aria-selected="'+(page==='charts')+'"')+'</nav>';
+  }
+  function portraits(){
+    return '<div class="lx-friends">'+button('connections','<span class="lx-portrait lx-add">'+ico('plus')+'</span><span>Add Friends</span>',null,'')+
+      people.map((p,i)=>'<button type="button" data-lx="person" data-person="'+i+'"><img class="lx-portrait" decoding="async" data-lx-src="'+p.img+'" alt=""><span>'+p.name+(i===0?'<small class="lx-friend-activity">RIVALS</small>':'')+'</span></button>').join('')+'</div>';
+  }
+  function discoverAvatars(){
+    const cards=people.slice(0,6).map((p,i)=>'<button type="button" class="lx-card" data-lx="person" data-person="'+i+'" aria-label="View '+p.name+' profile"><img decoding="async" data-lx-src="'+p.img+'" alt=""><span class="lx-card-title">'+p.name+'</span></button>');
+    return '<section class="lx-section lx-discover"><h2>Discover Avatars</h2><div class="lx-cards lx-squares">'+cards.join('')+'</div></section>';
+  }
+  function home(){
+    return tabs()+portraits()+section('Recommended For You',[5,6,7,8,9,3].map(i=>games[i]),false)+
+      section('Continue',games.slice(0,5),true,'continue')+discoverAvatars();
+  }
+  function detail(){
+    const g=localGame(),play=g.id==='gta',favorite=data.favorites.includes(g.id),like=data.likes.includes(g.id),alert=data.alerts.includes(g.id);
+    const ctl=(id,label,icon,on)=>button(id,label,icon,'','aria-pressed="'+on+'"');
+    return '<div class="lx-detail-nav">'+button('back','', 'close','lx-back','aria-label="Back to library"')+button('navigation','','menu','lx-nav-toggle','aria-label="Navigation menu" aria-haspopup="dialog" aria-controls="lx-dialog"')+'</div><article class="lx-detail-inner"><div class="lx-detail-head"><img class="lx-detail-tile" src="'+g.img+'" alt=""><div class="lx-detail-meta"><h1>'+visibleText(g.name)+'</h1>'+
+      '<div class="lx-age">'+(play?'Maturity: Content May Vary · Ages 16+':'Experience preview')+'</div>'+
+      (play?button('creator',hiddenCreator,null,'lx-creator','aria-label="Open creator profile"'):'')+
+      '<div class="lx-play-row">'+(play?button('play','', 'play','lx-play','aria-label="Play Grand Theft Auto VI" title="Play"'):button('art','View artwork',null,'lx-play'))+
+      button('favorite','','star','lx-square-button','aria-label="'+(favorite?'Remove from favorites':'Add to favorites')+'" aria-pressed="'+favorite+'"')+
+      button('detail-more','','more','lx-square-button','aria-label="More options"')+'</div></div></div>'+
+      '<div class="lx-chips">'+ctl('like',g.rating+'%','like',like)+(play?button('server','Local server','people',''):'')+
+      ctl('alert','Notify','bell',alert)+ctl('favorite','Favorite','star',favorite)+button('share','Share','share','')+'</div>'+
+      '<button type="button" data-lx="art" class="lx-hero" aria-label="Expand artwork"><img src="'+(g.hero||g.img)+'" alt="'+esc(g.name)+' artwork">'+ico('expand')+'</button></article>';
+  }
+  function simple(title,html){return '<div class="lx-plain"><h2 class="lx-page-title">'+title+'</h2>'+html+'</div>';}
+
+  function loadLauncherImage(image) {
+    image.src=image.dataset.lxSrc;
+    delete image.dataset.lxSrc;
+  }
+  const artworkObserver=window.IntersectionObserver && new IntersectionObserver(entries=>{
+    for(const entry of entries){
+      if(!entry.isIntersecting || !entry.target.isConnected || !entry.target.dataset.lxSrc)continue;
+      loadLauncherImage(entry.target);
+      artworkObserver.unobserve(entry.target);
+    }
+  },{root:content,rootMargin:'64px'});
+  function render(preserve=false){
+    const old=content.scrollTop;const g=localGame();
+    shell.classList.toggle('lx-detail',page==='details');shell.classList.toggle('lx-compact',!!data.compact);shell.classList.toggle('lx-home',page==='home');
+    root.querySelectorAll('[data-nav]').forEach(b=>{if(b.dataset.nav===page||b.dataset.nav==='home'&&['details','charts','continue','favorites','search'].includes(page)) b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+    let view;
+    switch(page){
+      case 'details': view=detail();break;
+      case 'home':view=home();break;
+      case 'charts':view=tabs()+section('Top rated',[...games].sort((a,b)=>b.rating-a.rating),true);break;
+      case 'continue':view=simple('Continue',grid(games.slice(0,5)));break;
+      case 'moments':view=simple('Moments','<button type="button" data-lx="moment-art" class="lx-hero"><img src="'+games[0].hero+'" alt="Grand Theft Auto VI artwork">'+ico('expand')+'</button>');break;
+      case 'favorites':{const list=games.filter(x=>data.favorites.includes(x.id));view=simple('Favorites',list.length?grid(list):'<p class="lx-empty">Tap the star on an experience to save it here.</p>');break;}
+      case 'me':view=simple('Me','<div class="lx-profile"><img src="launcher/e7dbdb877544afa0.webp" alt=""><div><h2>'+visibleText(data.name)+'</h2>'+button('edit-profile','Edit name','edit','lx-secondary')+'</div></div>'+section('Favorites',games.filter(x=>data.favorites.includes(x.id)),true,'favorites'));break;
+      case 'search':{const q=query.value.toLocaleLowerCase().trim();const matches=games.filter(x=>[x.name,...(x.aliases||[])].some(name=>name.toLocaleLowerCase().includes(q)));view=simple('Search results',matches.length?grid(matches):'<p class="lx-empty">No matching experiences.</p>');break;}
+      default:view=home();
+    }
+    content.innerHTML=page==='details'?view:'<div class="lx-main">'+view+'</div>';
+    icons(content);content.scrollTop=preserve?old:0;
+    if(artworkObserver)artworkObserver.disconnect();
+    for(const image of content.querySelectorAll('[data-lx-src]')){
+      if(artworkObserver)artworkObserver.observe(image);else loadLauncherImage(image);
+    }
+    if(page==='details')root.setAttribute('aria-label',g.name+' experience details');else root.setAttribute('aria-label','Roblox experience launcher');
+  }
+  function close(){if(dialog.open)dialog.close();modal='';}
+  function setPage(name){
+    if(page==='home')homeScroll=content.scrollTop;
+    if(name!=='search'){query.value='';maskInput(query);}
+    close();page=name;render();
+  }
+  function details(id){
+    detailOrigin=page;selection=id;setPage('details');
+    if(id!=='gta')return;
+    window.JoinScreen.prepare();
+    const article=content.querySelector('.lx-detail-inner');
+    for(const [state,frames] of [['cover',13],['meta',19],['hero',35]]){
+      const phase='lx-'+state+'-pending';
+      article.classList.add(phase);
+      setTimeout(()=>article.classList.remove(phase),frames*1000/60);
+    }
+  }
+  function openModal(id,title,body,gallery=false){
+    modal=id;root.querySelector('#lx-dialog-title').innerHTML=visibleText(title);dialogBody.innerHTML=body;
+    dialogBody.querySelectorAll('input').forEach(maskInput);
+    dialog.classList.toggle('lx-gallery',gallery);icons(dialogBody);
+    if(!dialog.open)dialog.showModal();
+  }
+  function artwork(g){
+    openModal('art',g.name,'<img class="lx-gallery-image" src="'+(g.hero||g.img)+'" alt="'+esc(g.name)+'">',true);
+  }
+  function profile(index){
+    const p=people[index];if(!p)return;
+    selectedPerson=index;const added=data.friends.includes(p.name);
+    openModal('person','Profile','<div class="lx-profile"><img src="'+p.img+'" alt=""><h2>'+esc(p.name)+'</h2></div>'+button('friend-toggle',added?'Remove from saved friends':'Save friend',added?'check':'plus','lx-secondary'));
+  }
+  function connections(){
+    openModal('connections','Friends',people.map((p,i)=>button('person',esc(p.name)+(data.friends.includes(p.name)?' ✓':''),null,'lx-menu-row','data-person="'+i+'"')).join(''));
+  }
+  function chat(){
+    openModal('chat','Local chat','<div class="lx-conversation">'+(data.messages.length?data.messages.map(m=>'<div class="lx-bubble">'+visibleText(m)+'</div>').join(''):'<p>Your messages stay on this device.</p>')+'</div><form id="lx-chat-form" class="lx-form"><input aria-label="Message" placeholder="Message" maxlength="260" required autocomplete="off"><button class="lx-primary">Send</button></form>');
+    const history=dialogBody.querySelector('.lx-conversation');history.scrollTop=history.scrollHeight;
+  }
+  const fullDisplay=window.matchMedia('(display-mode: fullscreen)');
+  const fullButton=root.querySelector('.lx-header-tools [data-lx="fullscreen"]');
+  function hasFullscreenElement(){return Boolean(document.fullscreenElement||document.webkitFullscreenElement);}
+  function updateFullButton(){
+    const active=hasFullscreenElement();
+    const label=active?'Exit full screen':'Full screen';
+    fullButton.hidden=fullDisplay.matches&&!active;
+    fullButton.title=label;
+    fullButton.setAttribute('aria-label',label);
+    fullButton.setAttribute('aria-pressed',String(active));
+    if(dialog.open && modal==='more'){
+      dialogBody.innerHTML=menuItems();
+      icons(dialogBody);
+    }
+  }
+  function menuItems(){
+    const fullLabel=hasFullscreenElement()?'Exit full screen':'Full screen';
+    return button('favorites','Favorites','star','lx-menu-row')+button('connections','Friends','people','lx-menu-row')+
+      button('compact','Compact home layout: '+(data.compact?'On':'Off'),'settings','lx-menu-row')+
+      (fullButton.hidden?'':button('fullscreen',fullLabel,'expand','lx-menu-row'));
+  }
+  function more(){
+    openModal('more','More',menuItems());
+  }
+  function fullscreenHelp(){
+    const appleTouch=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    let message='Abrí el enlace directamente en el navegador y volvé a tocar el botón de pantalla completa.';
+    if(appleTouch){
+      message=navigator.standalone
+        ? 'Girá el dispositivo en horizontal para aprovechar toda la pantalla. iOS controla la visibilidad de la hora.'
+        : 'En Safari, tocá Compartir → Agregar a inicio y activá «Abrir como app web». Abrí Gamerlito desde ese ícono y girá el dispositivo en horizontal. iOS controla la visibilidad de la hora.';
+    }
+    openModal('fullscreen-help','Pantalla completa','<p>'+message+'</p>');
+  }
+  async function enterFullscreen(showHelp){
+    if(hasFullscreenElement()||fullDisplay.matches)return;
+    const screen=document.documentElement;
+    try{
+      if(document.fullscreenEnabled!==false && typeof screen.requestFullscreen==='function'){
+        await screen.requestFullscreen({navigationUI:'hide'});
+      }else if(document.webkitFullscreenEnabled!==false && typeof screen.webkitRequestFullscreen==='function'){
+        await screen.webkitRequestFullscreen();
+      }else if(showHelp) fullscreenHelp();
+    }catch{if(showHelp)fullscreenHelp();}
+  }
+  async function toggleFullscreen(){
+    close();
+    if(!hasFullscreenElement()){await enterFullscreen(true);return;}
+    try{
+      if(document.exitFullscreen)await document.exitFullscreen();
+      else await document.webkitExitFullscreen();
+    }catch{notify('Use your device controls to exit full screen.');}
+  }
+  function shareGame(){
+    const g=localGame();openModal('share','Share experience','<form class="lx-form" id="lx-copy-form"><input readonly aria-label="Experience title" value="'+esc(g.name)+'"><button class="lx-primary">Copy name</button></form>');
+  }
+  root.addEventListener('click',event=>{
+    const b=event.target.closest('button[data-lx]');if(!b||!root.contains(b))return;
+    const act=b.dataset.lx,g=localGame();
+    switch(act){
+      case 'home':case 'charts':case 'me':case 'moments':case 'favorites':case 'continue':setPage(act);break;
+      case 'details':details(b.dataset.id);break;
+      case 'back':setPage(detailOrigin==='details'?'home':detailOrigin);if(page==='home')content.scrollTop=homeScroll;break;
+      case 'play':if(typeof window.startExperience==='function'){close();enterFullscreen(false);window.startExperience();}break;
+      case 'art':artwork(g);break;
+      case 'moment-art':artwork(games[0]);break;
+      case 'close':close();break;
+      case 'favorite':{const added=toggle('favorites',g.id);render(true);notify(added?'Added to Favorites':'Removed from Favorites');break;}
+      case 'like':{const added=toggle('likes',g.id);render(true);notify(added?'Liked':'Like removed');break;}
+      case 'alert':{const added=toggle('alerts',g.id);render(true);notify(added?'Added to Notifications':'Removed from Notifications');break;}
+      case 'server':openModal('server','Local server','<div class="lx-profile"><img src="launcher/e7dbdb877544afa0.webp" alt=""><div><h2>'+visibleText(data.name)+'</h2><p>1 player on this device</p></div></div>');break;
+      case 'creator':openModal('creator','Creator','<div class="lx-profile"><img src="launcher/e7dbdb877544afa0.webp" alt=""><h2 aria-label="Creator name hidden">'+hiddenCreator+'</h2></div>');break;
+      case 'detail-more':openModal('detail-more',g.name,button('art','View artwork','image','lx-menu-row')+button('share','Share','share','lx-menu-row'));break;
+      case 'share':shareGame();break;
+      case 'more':more();break;
+      case 'navigation':{
+        const links=Array.from(root.querySelectorAll('.lx-rail button'),item=>{
+          const row=item.cloneNode(true);
+          row.className='lx-menu-row';
+          row.removeAttribute('data-nav');
+          return row.outerHTML;
+        });
+        openModal('navigation','Menu',links.join(''));break;
+      }
+      case 'chat':chat();break;
+      case 'connections':connections();break;
+      case 'person':profile(Number(b.dataset.person));break;
+      case 'friend-toggle':toggle('friends',people[selectedPerson].name);profile(selectedPerson);break;
+      case 'notices':{const list=games.filter(x=>data.alerts.includes(x.id));openModal('notices','Notifications',list.length?list.map(x=>button('details',visibleText(x.name),'bell','lx-menu-row','data-id="'+x.id+'"')).join(''):'<p>No notifications. Tap Notify on an experience to keep it here.</p>');break;}
+      case 'compact':data.compact=!data.compact;persist();render(true);more();break;
+      case 'fullscreen':toggleFullscreen();break;
+      case 'edit-profile':openModal('edit-profile','Edit display name','<form class="lx-form" id="lx-profile-form"><input aria-label="Display name" maxlength="26" required value="'+esc(data.name)+'"><button class="lx-primary">Save</button></form>');break;
+    }
+  });
+  root.addEventListener('submit',async e=>{
+    const form=e.target;if(!['lx-chat-form','lx-copy-form','lx-profile-form','lx-search-form'].includes(form.id))return;
+    e.preventDefault();const input=form.querySelector('input'),value=input.value.trim();
+    if(form.id==='lx-search-form'){if(value){setPage('search');input.blur();}return;}
+    if(!value) return;
+    if(form.id==='lx-chat-form'){data.messages.push(value);data.messages=data.messages.slice(-100);persist();chat();dialogBody.querySelector('input').focus();}
+    if(form.id==='lx-profile-form'){data.name=value;persist();close();render(true);}
+    if(form.id==='lx-copy-form'){try{await navigator.clipboard.writeText(value);close();notify('Copied');}catch{input.select();try{if(document.execCommand('copy')){close();notify('Copied');}}catch{}}}
+  });
+  root.addEventListener('input',e=>{if(e.target instanceof HTMLInputElement)maskInput(e.target);});
+  query.addEventListener('input',()=>{if(query.value.trim()){page='search';render();}else{page='home';render();}});
+  dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)close();}});
+  dialog.addEventListener('close',()=>{modal='';});
+  document.addEventListener('keydown',e=>{
+    if(root.hidden||root.getClientRects().length===0||e.key!=='Escape')return;
+    if(dialog.open){e.stopImmediatePropagation();e.preventDefault();close();}
+    else if(page!=='home'){e.stopImmediatePropagation();e.preventDefault();setPage('home');}
+  },true);
+  window.Launcher={show(name='home'){root.hidden=false;root.style.removeProperty('display');selection='gta';detailOrigin='home';setPage(name==='details'?'details':'home');},hide(){close();root.hidden=true;}};
+  document.addEventListener('fullscreenchange',updateFullButton);
+  document.addEventListener('webkitfullscreenchange',updateFullButton);
+  if(fullDisplay.addEventListener)fullDisplay.addEventListener('change',updateFullButton);
+  else if(fullDisplay.addListener)fullDisplay.addListener(updateFullButton);
+  icons(root);render();updateFullButton();
+})();
+
+</script>
+</body>
+</html>

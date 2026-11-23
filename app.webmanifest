@@ -1,0 +1,28 @@
+{
+  "id": "./",
+  "name": "Gamerlito · Vestuario de Lucía",
+  "short_name": "Vestuario de Lucía",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "theme_color": "#140a1b",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "./gamerlito-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./gamerlito-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
